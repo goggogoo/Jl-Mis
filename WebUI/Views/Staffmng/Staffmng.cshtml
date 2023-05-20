@@ -1,0 +1,317 @@
+﻿    <link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="../Content/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="../Content/easyui/themes/icon.css" rel="stylesheet" />
+    <script src="../Content/easyui/jquery.min.js"></script>
+    <script src="../Content/easyui/jquery.easyui.min.js"></script>
+    <script src="../Content/easyui/locale/easyui-lang-zh_CN.js"></script>
+    
+    <script src="../../Scripts/printThis.js"></script>
+
+@{
+    Layout = null;
+}
+
+<body>
+    <div class="easyui-layout" data-options="fit:true">
+
+        <div id="divwest" data-options="region:'west',split:false" style="width:170px;padding:0 0 0 0;border:none;overflow-x:hidden; overflow-y:hidden;">
+            <table id="dt" class="easyui-treegrid"></table>
+        </div>
+
+        <div data-options="region:'center',split:true" style="width:auto;padding:0px;">
+            <div class="easyui-layout" data-options="fit:true">
+
+                <div data-options="region:'west',split:true" style="width:200px;padding:0 0 0 0;border:none;">
+                    <table class="easyui-datagrid" id="dg"></table>
+                </div>
+
+                <div data-options="region:'center',split:true" style="width:auto;padding:0px;">
+                    <div class="easyui-layout" data-options="fit:true">
+
+                        <div data-options="region:'north'" style="padding:5px;background:#fafafa;width:100%;border:1px solid #ccc">
+	                        <a href="#" class="easyui-linkbutton" plain="true" iconCls="icon-add" onclick="$('#img1').attr('src','/Ashxs/Staffmng.ashx?action=getstaffimg&id=331');">getlxlist</a>
+	                        <a href="#" class="easyui-linkbutton" plain="true" iconCls="icon-add" onclick="alert($('#img1').attr('src'));">getlxlist</a>
+	                        <a href="#" class="easyui-linkbutton" plain="true" iconCls="icon-add" onclick="$.get('/Ashxs/Valids.ashx?action=getmenu1', function (result) { alert(result);});"">getmenu1</a>
+	                        <a href="#" class="easyui-linkbutton" plain="true" iconCls="icon-add" onclick="$.get('/Ashxs/Valids.ashx?action=gettree1', function (result) { alert(result);});">gettree1</a>
+	                        <a href="#" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="$('#dg').datagrid('reload');$('#img1').attr('src', '#');$('#fw')[0].reset();$('#fw').form('clear');">刷新</a>
+                            <a href="#" class="easyui-linkbutton" id="btn1" plain="true" iconCls="icon-reload" onclick="appendrow()">新增</a>
+	                        <a href="#" class="easyui-linkbutton" id="btn2" plain="true" iconCls="icon-help" onclick="delrow()">删除</a>
+	                        <a href="#" class="easyui-linkbutton" id="btn3" plain="true" iconCls="icon-help" onclick="mdfrow()">修改</a>
+	                        <a href="#" class="easyui-linkbutton" id="btn4" plain="true" iconCls="icon-save" disabled="true" onclick="saverow()">保存</a>
+	                        <a href="#" class="easyui-linkbutton" id="btn5" plain="true" iconCls="icon-print" onclick="printme()">打印</a>
+                        </div>
+                        <div data-options="region:'center',split:true" style="width:auto;padding:5px 50px 0px 50px;">
+                            <form id="fw" method="post" enctype="multipart/form-data">
+                                <table id="tw" cellpadding="3"  style="width: 100%;height:auto">
+                                    <tr>
+                                        <td width="130px">
+                                            <img id="img1" width='100' height ='100'/>
+                                            <input class="easyui-filebox" name="file1" id="file1" data-options="prompt:'Choose a file...'" style="width:100%"/>
+                                        </td>
+                                        <td>
+                                            <table id="tw2" style="width:100%;table-layout:fixed;">
+                                                <tr>
+                                                    <td>ID</td><td><input class="easyui-textbox" type="text" name="ID" id="ID" style="width: 100%" data-options="readonly:true"/></td>
+                                                    <td>工号</td><td><input class="easyui-textbox" type="text" name="LS_GH"id="LS_GH" style="width: 100%"  data-options="required:true"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>姓名</td><td><input class="easyui-textbox" type="text" name="LS_XM" style="width: 100%" data-options="required:true"/></td>
+                                                    <td>性别</td>
+                                                    <td><input class="easyui-combobox" name="LI_XB" style="width: 100%" data-options="required:true,panelHeight:'auto',valueField: 'value',textField: 'text',data: [{value: '1',text: '男'},{value: '0',text: '女'}]" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>出生日期</td><td><input class="easyui-datebox" type="text" name="LDT_CSRQ" style="width: 100%" /></td>
+                                                    <td>班组</td>
+                                                    <td><input class="easyui-textbox" type="text" name="LS_BZ" style="width: 100%"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>职务</td><td><input class="easyui-textbox" type="text" name="LS_ZW" style="width: 100%"/></td>
+                                                    <td>权限</td>
+                                                    <td><input class="easyui-textbox" type="text" name="LS_QX" style="width: 100%" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>备注</td><td colspan="3"><input class="easyui-textbox" type="text" name="LS_MEMO" multiline="true" style="width: 100%;height:60px;"/></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    //$(document).onreadystatechange = function () {
+    //    if ($(document).readyState == "complete") {
+    //        $(document).body.style.display = "block";
+    //    } else {
+    //        $(document).body.style.display = "none";
+    //    };
+    //};
+
+    $('#dt').treegrid({
+        url: '/Ashxs/Staffmng.ashx?action=getpartmtree',
+        title:'Folder Browser',
+        showHeader: false,
+        fit:true,
+        idField: 'NODE',
+        treeField: 'DISPLAYTEXT',
+        columns: [[
+            { field: 'DISPLAYTEXT', title: 'DISPLAYTEXT', width: 'auto'},
+        ]],
+        onClickRow: function (row) {
+            alert(row.DISPLAYTEXT);
+        },
+
+    });
+
+
+    $('#dg').datagrid({
+        title: '人员名单',
+        idField: 'ID',
+        url: '/Ashxs/Staffmng.ashx?action=getstafflistjson',
+        fit: true,
+        pagination: true,//表示在datagrid设置分页      
+        rownumbers: true,
+        singleSelect: true,
+        striped: true,//奇偶行使用不同背景色
+        nowrap: true,//数据显示在一行里
+        pageSize:10,
+        pageList: [5, 10, 15, 20],
+        collapsible: true,
+        fitColumns: true,
+        remoteSort: false,
+        loadMsg: "正在加载数据，请稍后...",
+        queryParams: {},
+        onLoadSuccess: function (data) {
+            if (data.total == 0) {
+                var body = $(this).data().datagrid.dc.body2;
+                body.find('table tbody').append('暂无数据');
+                $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').hide();
+            }
+            else $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').show();
+
+        },
+
+        columns: [[
+            { field: 'ID', title: 'ID',hidden:false },
+            { field: 'LS_GH', title: '工号', width: '100px', align: 'left', sortable: true,editor:'text'},
+            { field: 'LS_XM', title: '姓名', width: '100px', align: 'left', sortable: true, editor: 'text' },
+            { field: 'LI_XB', title: '性别', width: '100px', align: 'left', sortable: true,
+                formatter: function (value, row) {if (row.LI_XB == true) { return '男'; } else { return '女';}},
+                editor:'combobox'
+            },
+            { field: 'LS_BZ', title: '部门', width: '100px', align: 'left', sortable: true, editor: 'text' }
+        ]],
+
+        onClickRow: function (index, row) {
+            $.ajaxSettings.async = false;
+            $('#fw').form('load', '/Ashxs/Staffmng.ashx?action=getstaffrowjson&id=' + row['ID']);
+            $('#img1').attr('src', '/Ashxs/Staffmng.ashx?action=getstaffimg&id=' + row['ID']);
+            //$('#img1').attr('src', '/content/images/nophoto.jpg');
+            $.ajaxSettings.async = true;
+        },
+
+    });
+
+
+
+    function get1() {
+        $.get("/Ashxs/Valids.ashx?action=getlxlistjson", function (result) {
+            alert(result);
+        });
+    }
+    function printme() {
+        $("#file1").filebox('clear');
+
+        $('#fw input,select option').each(function () {
+            $(this).attr('value', $(this).val());
+        });
+
+        $('#fw textarea').each(function () {
+                $(this).html($(this).val());
+        });
+        //搞定 type=checkbox,type=radio 选中状态
+        $('input[type="checkbox"],input[type="radio"]').each(function () {
+            if ($(this).attr('checked')) $(this).attr('checked', true);
+		        else $(this).removeAttr('checked');
+        });
+        //搞定select选中状态
+        $('select option').each(function () {
+            if ($(this).attr('selected')) $(this).attr('selected', true);
+		        else $(this).removeAttr('selected');
+        });
+
+        $('#fw').printThis({
+            importCSS: true,
+            importStyle: true,
+            formValues: true,
+            copyTagClasses: true
+        });
+    }
+    function appendrow() {
+        $('#img1').attr('src', '#');
+        //$('#fw')[0].reset();//基于jquery
+        $('#fw').form("clear");//基于easyui
+        $('#btn4').linkbutton('enable');
+    }
+    function mmm() {
+        alert($('[name ="LS_MEMO"]').val());
+    }
+    function delrow() {
+        var hasSelect = $("#dg").datagrid("getSelected");
+        if (hasSelect!=null) { //如果只选择了一行则可以进行修改，否则不操作
+            $.messager.confirm('Confirm', 'Are you sure?', function (r) {
+                if (r) {
+                    rowNumber = $("#dg").datagrid("getRowIndex", hasSelect);
+                    $('#dg').datagrid('deleteRow', rowNumber);
+
+                    $.ajax({
+                        url: '/Ashxs/Staffmng.ashx?action=delstaffrow&id=' + hasSelect.ID.toString(),
+                        type: 'POST',
+                        complete: function (xhr) {
+                            if (xhr.responseText == '1') {
+                                $.messager.alert('Warning', '已删除');
+                            } else { $.messager.alert('Warning', '删除不成功');}
+                        }
+                    }
+                    );
+                }
+            });
+        }
+    }
+    function mdfrow() {
+
+      $('#btn4').linkbutton('enable');
+
+    }
+    function saverow() {
+        $.messager.progress();	// display the progress bar
+        $('#fw').form('submit', {
+            url: '/Ashxs/Staffmng.ashx?action=savestaffrow',
+            onSubmit: function (param) {
+                var isValid = $(this).form('validate');
+                param.param = JSON.stringify($('#fw').serializeObject());
+                if (!isValid) {
+                    $.messager.progress('close');
+                }
+                return isValid;	
+            },
+            success: function (data) {
+                $.messager.progress('close');
+                $('#btn4').linkbutton('disable');
+            }
+        });
+
+    }
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+    $('#file1').filebox({
+        onChange: function (n, o) {
+            if (n == null || n == undefined || n.length== 0) return;
+            var windowURL = window.URL || window.webkitURL;
+            var file = $("input:file[name='file1']");
+            $('#img1').attr('src', windowURL.createObjectURL(file[0].files[0]));
+            //alert($(this).filebox('getValue'));
+        }
+    });
+
+
+</script>
+<style>
+    .textbox {
+        border: 0px;
+    }
+   #tw {
+        overflow: hidden;
+        table-layout: fixed;
+
+    }
+
+    #tw td{
+
+        border: 1px solid #95B8E7;
+        background-color: #fafafa;
+        vertical-align: middle;
+        text-align:center;
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+    }
+    #tw2 td {
+        width: 25%;
+    }
+    #tw2 input[type='text'],.textbox,textarea{
+        width: 100%!important;
+    }
+    /*去掉dt虚线,td不在dt内*/
+    #divwest .datagrid-body td,.datagrid-footer td{
+        border-right:0px;
+        border-bottom:0px;
+        overflow:hidden;
+        padding:0;
+        margin:0;
+        }
+
+</style>

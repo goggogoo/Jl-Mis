@@ -1,0 +1,299 @@
+﻿<link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+
+<link href="../Content/easyui/themes/default/easyui.css" rel="stylesheet" />
+<link href="../Content/easyui/themes/icon.css" rel="stylesheet" />
+<script src="../Content/easyui/jquery.min.js"></script>
+<script src="../Content/easyui/jquery.easyui.min.js"></script>
+<script src="../Content/easyui/locale/easyui-lang-zh_CN.js"></script>
+
+<script src="../../Scripts/printThis.js"></script>
+
+@{
+    Layout = null;
+}
+
+<table class="easyui-datagrid" id="dg" style="width:100%;"></table>
+
+<script>
+    $('#dg').datagrid({
+        //title: '发文管理',
+        idField: 'SQBH',
+        url: '/Ashxs/Carapp.ashx?action=getcarapplist',
+        pagination: true,//表示在datagrid设置分页      
+        rownumbers: true,
+        singleSelect: true,
+        striped: true,//奇偶行使用不同背景色
+        nowrap: true,//数据显示在一行里
+        pageSize: 10,
+        pageList: [5, 10, 15, 20],
+        //collapsible: true,
+        fitColumns: true,
+        remoteSort: false,
+        loadMsg: "正在努力加载数据，请稍后...",
+        queryParams: {qsign:2},
+        onLoadSuccess: function (data) {
+            if (data.total == 0) {
+                var body = $(this).data().datagrid.dc.body2;
+                body.find('table tbody').append('暂无数据');
+                $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').hide();
+            }
+            else $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').show();
+
+        },
+
+        columns: [[
+            { field: 'SQBH', title: 'SQBH', hidden: false },
+            { field: 'SIGN', title: 'SIGN', width: '100px', align: 'left', sortable: true },
+            { field: 'SQRXM', title: 'SQRXM', width: '100px', align: 'left', sortable: true },
+            { field: 'MDD', title: 'MDD', width: '100px', align: 'left', sortable: true },
+            {
+                field: 'SQQSSJ', title: 'SQQSSJ', width: '100px',
+                formatter: function (value, row, index) {
+                    if (row.SQQSSJ) {
+                        return new Date(value).Format("yyyy/MM/dd");
+                    } else {
+                        return value;
+                    }
+                }
+            }
+        ]],
+        toolbar:
+            [
+                {
+                    text: '编辑。。',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        var hasSelect = $("#dg").datagrid("getSelected");
+                        if (hasSelect != null) {
+                            formload(hasSelect['SQBH']);
+                        }
+                    }
+                },
+                {
+                    text: '打印。。',
+                    iconCls: 'icon-pring',
+                    handler: function () {
+                        printme();
+                    }
+                }
+            ],
+        onDblClickRow: function (index, row) {
+            formload(row['SQBH']);
+        }
+    });
+    function formload(id) {
+        $.ajaxSettings.async = false;
+        $('#fw').form('load', '/Ashxs/Carapp.ashx?action=getcarapprowjson&sqbh=' + id);
+        $('#ww').window('open');
+        $.ajaxSettings.async = true;
+    }
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3),//季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+</script>
+
+<!--修改窗口-->
+
+<div id="ww" class="easyui-window" title="修改" collapsible="false" minimizable="false"
+    data-options="modal:true,closed:true,iconCls:'icon-save'" maximizable="true"
+    style="width: 800px; height: 400px; padding: 5px;top:5px; background: #fafafa;">
+
+    <div class="easyui-layout" fit="true">
+        <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+            <p>用车申请调度单</p>
+            <form id="fw" method="post">
+                调度单号：<input class="easyui-textbox" type="text" name="SQBH" id="SQBH" style="width: 30%" data-options="readonly:true" />
+                用车部门：<input class="easyui-textbox" type="text" name="BMMC" id="BMMC" style="width: 30%" data-options="readonly:true" />
+                <table id="tw" cellpadding="3" style="width: 100%;height:auto">
+                    <tr><td>
+                        <div style="display:none">
+                            <input class="easyui-textbox" type="text" name="SIGN" id="SIGN" />
+                            </div>
+                        </td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <td rowspan="5">申请填写</td>
+                        <td>申请事由</td>
+                        <td colspan="7"><input class="easyui-textbox" type="text" name="SQSY" id="SQSY" style="width: 100%" data-options="readonly:true,required:true" /></td>
+                    </tr><tr>
+                        <td>申请人员</td>
+                        <td colspan="3"><input class="easyui-textbox" type="text" name="SQRXM" id="SQRXM" style="width: 100%" data-options="readonly:true," /></td>
+                        <td>填单时间</td>
+                        <td colspan="3"><input class="easyui-datebox" type="text" name="SQSJ" id="SQSJ" style="width: 100%" data-options="readonly:true," /></td>
+                    </tr><tr>
+                        <td>乘车人数</td>
+                        <td colspan="1"><input class="easyui-numberspinner" value="1" name="CCRS" id="CCRS" style="width: 100%" data-options="readonly:true,required:true" /></td>
+                        <td>候车地点</td>
+                        <td colspan="1"><input class="easyui-textbox" type="text" name="HCDD" id="HCDD" style="width: 100%" data-options="readonly:true,required:true" /></td>
+                        <td>目的地</td>
+                        <td colspan="1"><input class="easyui-textbox" type="text" name="MDD" id="MDD" style="width: 100%" data-options="readonly:true,required:true" /></td>
+                        <td>市内/外</td>
+                        <td colspan="1">
+                            <input class="easyui-radiobutton" name="SNSW" value="0" label="内"  labelWidth="20px" style="Width:15px;height:15px;" data-options="readonly:true"><input class="easyui-radiobutton" name="SNSW" value="1" label="外"  labelWidth="20px" style="Width:15px;height:15px;" data-options="readonly:true">
+                            <!--<input class="easyui-checkbox" type="text" name="SNSW" id="SNSW" value="1" style="width: 100%" data-options="readonly:false,required:true" />-->
+
+                        </td>
+                    </tr><tr>
+                        <td>起始时间</td>
+                        <td colspan="3"><input class="easyui-datetimebox" type="text" name="SQQSSJ" id="SQQSSJ" style="width: 100%" data-options="readonly:false,required:true,editable:false" /></td>
+                        <td>结束时间</td>
+                        <td colspan="3"><input class="easyui-datetimespinner" type="text" name="SQJSSJ" id="SQJSSJ" style="width: 100%" data-options="readonly:false,required:true" /></td>
+                    </tr><tr>
+                        <td>备注事项</td>
+                        <td colspan="7"><input class="easyui-textbox" type="text" name="SQBZ" id="SQBZ" style="width: 100%" data-options="readonly:false" /></td>
+                    </tr><tr>
+                        <td rowspan="2">部门审批</td>
+                        <td>部门意见</td>
+                        <td colspan="1">
+                            <input class="easyui-combobox" name="BMPFYJ" id="BMPFYJ" style="width: 100%" data-options="required:true,editable:false,panelHeight:'auto',valueField: 'value',textField: 'text',data: [{value: '1',text: '同意'},{value: '3',text: '退回'}]" />
+                        </td>
+                        <td>审批人</td>
+                        <td colspan="1"><input class="easyui-textbox" type="text" name="BMPFRXM" id="BMPFRXM" style="width: 100%" data-options="readonly:true" /></td>
+                        <td>审批时间</td>
+                        <td colspan="3"><input class="easyui-datebox" type="text" name="BMPFSJ" id="BMPFSJ" style="width: 100%" data-options="readonly:true" /></td>
+                    </tr><tr>
+                        <td>备注事项</td>
+                        <td colspan="7"><input class="easyui-textbox" type="text" name="BMPFBZ" id="BMPFBZ" style="width: 100%" data-options="readonly:false" /></td>
+                    </tr><tr>
+                        <td rowspan="2">派车单位</td>
+                        <td>牌号</td>
+                        <td colspan="3"><input class="easyui-combogrid" name="CPH1" id="CPH1" style="width: 100%" data-options="
+                            required:true,
+                            editable:false,
+                            panelWidth:200,
+                            panelHeight:'auto',
+                            idField:'CHPHM',
+                            textField:'CHPHM',
+                            url:'/Ashxs/Carapp.ashx?action=getcphlist',
+                            columns:[[
+                            {field:'CHPHM',title:'CHPHM',width:100},
+                            {field:'CHLLX',title:'CHLLX',width:60}
+                            ]]
+                          " /></td>
+                        <td>驾驶员</td>
+                        <td colspan="3"><input class="easyui-combogrid" name="JSYBH1" id="JSYBH1" style="width: 100%" data-options="
+                            required:true,
+                            editable:false,
+                            panelWidth:200,
+                            panelHeight:200,
+                            value:'',
+                            idField:'LS_XM',
+                            textField:'LS_XM',
+                            url:'/Ashxs/Staffmng.ashx?action=getstafflistjson',
+                            columns:[[
+                            {field:'ID',title:'ID',width:60},
+                            {field:'LS_GH',title:'LS_GH',width:60},
+                            {field:'LS_XM',title:'LS_XM',width:60}
+                            ]]
+                          " /></td>
+                    </tr><tr>
+                        <td>备注事项</td>
+                        <td colspan="7"><input class="easyui-textbox" type="text" name="BGSPCBZ" id="BGSPCBZ" style="width: 100%" data-options="readonly:true" /></td>
+                    </tr>
+
+                </table>
+            </form>
+        </div>
+        <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;">
+            <a id="btnsend" class="easyui-linkbutton" icon="icon-edit" href="javascript:void(0)">发送</a>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+    $(function () {
+        if (!sessionStorage.getItem('userxm')) {
+            window.location.replace("/home/Index");
+        }
+    });
+
+    function printme() {
+        $('#fw input').each(function () {
+            $(this).attr('value', $(this).val());
+        })
+        $('#fw').printThis({
+            importCSS: true,
+            importStyle: true,
+            formValues: true,
+            copyTagClasses: true
+        });
+    }
+
+    $('#btnsend').click(function () {
+        $('#SIGN').textbox('setValue', 3);
+        $.messager.progress();	// display the progress bar
+        $('#fw').form('submit', {
+            url: '/Ashxs/Carapp.ashx?action=savecarappjson',
+            onSubmit: function (param) {
+                var isValid = $(this).form('validate');
+                param.param = JSON.stringify($('#fw').serializeObject());
+                if (!isValid) {
+                    $.messager.progress('close');	// hide progress bar while the form is invalid
+                }
+                return isValid;	// return false will stop the form submission
+            },
+            success: function () {
+                $.messager.progress('close');	// hide progress bar while submit successfully
+            }
+        });
+
+    });
+
+
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+
+
+</script>
+<style>
+    .textbox {
+        border: 0px;
+    }
+
+    #tw {
+        overflow: hidden;
+        table-layout: fixed;
+
+    }
+
+    #tw td {
+        width: 12.5%;
+        border: 1px solid #95B8E7;
+        background-color: #fafafa;
+        vertical-align: middle;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+    }
+</style>

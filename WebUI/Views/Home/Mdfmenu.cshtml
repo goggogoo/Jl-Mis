@@ -1,0 +1,188 @@
+﻿    <link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="../Content/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="../Content/easyui/themes/icon.css" rel="stylesheet" />
+    <script src="../Content/easyui/jquery.min.js"></script>
+    <script src="../Content/easyui/jquery.easyui.min.js"></script>
+    <script src="../Content/easyui/locale/easyui-lang-zh_CN.js"></script>
+    
+    <script src="../../Scripts/printThis.js"></script>
+
+@{Layout = null;}
+
+<table class="easyui-datagrid" id="dg" style="width:auto;height:auto"></table>
+
+<script>
+    $('#dg').datagrid({
+        title: '入库详情',
+        idField: 'ID',
+        url: '/Ashxs/Valids.ashx?action=getmenulistjson',
+        //pagination: true,//表示在datagrid设置分页      
+        rownumbers: true,
+        singleSelect: true,
+        striped: true,//奇偶行使用不同背景色
+        nowrap: true,//数据显示在一行里
+        //pageSize:5,
+        //pageList: [5, 10, 15, 20],
+        //collapsible: true,
+        fitColumns: true,
+        remoteSort: false,
+        loadMsg: "正在努力加载数据，请稍后...",
+        queryParams: {},
+        onLoadSuccess: function (data) {
+            if (data.total == 0) {
+                var body = $(this).data().datagrid.dc.body2;
+                body.find('table tbody').append('暂无数据');
+                $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').hide();
+            }
+            else $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').show();
+
+        },
+
+        columns: [[
+            { field: 'NODE', title: 'NODE', width: '100px', align: 'left', sortable: true, editor: 'text' },
+            { field: 'PNODE', title: 'PNODE', width: '100px', align: 'left', sortable: true,editor:'text' },
+            { field: 'TEXT', title: 'TEXT', width: '100px', align: 'left', sortable: true, editor: 'text' },
+            { field: 'TAG', title: 'TAG', width: '200px', align: 'left', sortable: true, editor: 'text' },
+            { field: 'ISFIN', title: 'ISFIN', width: '100px', align: 'left', sortable: true, editor: 'text' }
+        ]],
+        toolbar:
+            [
+                {
+                text: '添加数据',
+                iconCls: 'icon-add',
+                    handler: function () {
+                        var row = $("#dg").datagrid("appendRow", {});
+                        //$("#dg").datagrid("beginEdit", $("#dg").datagrid("getRows").length - 1);
+                    }
+                },
+
+                {
+                    text: '插入数据',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        insert();
+                    }
+                },
+                {
+                    text: '刷新数据',
+                    iconCls: 'icon-reload',
+                    handler: function () {
+                        $("#dg").datagrid("reload")
+                    }
+                },
+                {
+                    text: '删除数据',
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        var hasSelect = $("#dg").datagrid("getSelections");
+                        if (hasSelect.length == 1) { //如果只选择了一行则可以进行修改，否则不操作
+                            $.messager.confirm('Confirm', 'Are you sure?', function (r) {
+                                if (r) {
+                                    var row = $("#dg").datagrid("getSelections")[0];
+                                    rowNumber = $("#dg").datagrid("getRowIndex", row);
+                                    $('#dg').datagrid('deleteRow', rowNumber);
+                                }
+                            });
+                        }
+                    }
+                },
+                {
+                    text: '保存修改',
+                    iconCls: 'icon-save',
+                    handler: function () {
+                        var allrows = $('#dg').datagrid('getRows');
+
+                        //alert(JSON.stringify(allrows));
+                        allrows.forEach(function (value, index) {
+                            $('#dg').datagrid('endEdit', index);
+                        });
+                        var changedrows = $('#dg').datagrid('getChanges');
+                        //alert(JSON.stringify(changedrows));
+
+                        var insertedrows = $('#dg').datagrid('getChanges', "inserted");
+                        var deletedrows = $('#dg').datagrid('getChanges', "deleted");
+                        var updatedrows = $('#dg').datagrid('getChanges', "updated");
+
+                        var effectedrows = new Object();
+
+                        effectedrows['insertedrows'] = insertedrows;
+                        effectedrows['deletedrows'] = deletedrows;
+                        effectedrows['updatedrows'] = updatedrows;
+
+                        //alert(JSON.stringify(effectedrows));
+
+                        $.ajax({
+                            url: '/Ashxs/Valids.ashx?action=savemenu',
+                            data: { 'param': JSON.stringify(effectedrows) },
+                            type: 'POST',
+                            complete: function (xhr) { alert(xhr.responseText)}
+                        }
+                        );
+                    }
+                }
+
+
+            ],
+
+        onClickRow: function (index, row) {
+            var allrows = $('#dg').datagrid('getRows');
+            allrows.forEach(function (value, index0) {
+                if (index != index0) $('#dg').datagrid('endEdit', index0);
+            });
+            $("#dg").datagrid("beginEdit", index);
+        },
+
+    });
+    function insert() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row) {
+            var index = $('#dg').datagrid('getRowIndex', row);
+        } else {
+            index = 0;
+        }
+        var wjid;
+        $.ajaxSettings.async = false;
+        $.get("/Ashxs/Valids.ashx?action=getid", function (result) {
+            wjid = parseInt(result);
+        });
+        $.ajaxSettings.async = true;
+
+        $('#dg').datagrid('insertRow', {
+            index: index,
+            row: {
+                ID: wjid
+            }
+        });
+        $('#dg').datagrid('selectRow', index);
+        $('#dg').datagrid('beginEdit', index);
+    }
+
+</script>
+
+
+
+<script>
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+</script>
+<style>
+    .textbox {
+        border: 0px;
+    }
+
+</style>

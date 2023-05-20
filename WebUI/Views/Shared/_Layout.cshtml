@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 我的 ASP.NET 应用程序</title>
+
+    <link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="../Content/easyui/themes/metro-blue/easyui.css" rel="stylesheet" />
+    <link href="../Content/easyui/themes/icon.css" rel="stylesheet" />
+    <script src="../Content/easyui/jquery.min.js"></script>
+    <script src="../Content/easyui/jquery.easyui.min.js"></script>
+    <script src="../Content/easyui/locale/easyui-lang-zh_CN.js"></script>
+
+@{
+    Domain.Entities.RS_USERS user = (Domain.Entities.RS_USERS)HttpContext.Current.Session["user"];
+    if (user != null)
+    {
+        ViewBag.username=user.LS_XM;
+        ViewBag.usergh=user.LS_GH;
+        ViewBag.userzp=user.LB_ZP;
+        HttpContext.Current.Response.Write("<script>sessionStorage.setItem('userxm', '" + user.LS_XM + "')</script>");
+        HttpContext.Current.Response.Write("<script>sessionStorage.setItem('userbm', '" + user.LS_BZ.Split(Convert.ToChar("#"))[2] + "')</script>");
+    }else{
+        HttpContext.Current.Response.Redirect("/home/logon");
+    }
+}
+
+</head>
+
+<body class="easyui-layout">
+	<div data-options="region:'north',border:false" style="overflow:hidden;height:60px;background:#B3DFDA;padding:10px">@Html.Partial("NorthPart")</div>
+	<div data-options="region:'west',split:true,title:'West',iconCls:'icon-ok'" style="width:200px;padding:10px;overflow-x:hidden; overflow-y:auto;">@Html.Partial("WestPart")</div>
+	<div data-options="region:'east',split:true,collapsed:true,title:'East'" style="width:100px;padding:10px;">east region</div>
+	<div data-options="region:'south',border:false" style="height:50px;background:#A9FACD;padding:10px;">south region<div id="bgclock" style="float:right;padding-right:20px;"></div></div>
+	<div data-options="region:'center'" style="padding:0px 0px 0px 0px;">@RenderBody()</div>
+</body>
+</html>
+

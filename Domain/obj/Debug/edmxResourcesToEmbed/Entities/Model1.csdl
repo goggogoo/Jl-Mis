@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="HT_FILES">
+    <Key>
+      <PropertyRef Name="HT_NO" />
+    </Key>
+    <Property Name="HT_NO" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="SIGN" Type="Byte" />
+    <Property Name="FAG" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="RQ" Type="DateTime" />
+    <Property Name="NR" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="RS_USERS">
+    <Key>
+      <PropertyRef Name="LS_GH" />
+    </Key>
+    <Property Name="ID" Type="Int32" />
+    <Property Name="LS_GH" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="LS_XM" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="LS_PWD" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="LI_XB" Type="Boolean" />
+    <Property Name="LDT_CSRQ" Type="DateTime" />
+    <Property Name="LDT_GZRQ" Type="DateTime" />
+    <Property Name="LS_XL" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZC" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
+    <Property Name="LS_BZ" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZW" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LS_SFZ" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LS_SJH" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="LS_DHH" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="LI_ZT" Type="Boolean" />
+    <Property Name="LI_JB" Type="Byte" />
+    <Property Name="LI_SIGN" Type="Byte" />
+    <Property Name="LS_ZSMC1" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZSBH1" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZSMC2" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZSBH2" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="LS_QX" Type="String" MaxLength="400" FixedLength="false" Unicode="false" />
+    <Property Name="LS_MEMO" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="LB_ZP" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="WJ_TYPE">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" />
+    <Property Name="LL_SORT" Type="Int32" />
+    <Property Name="LS_ID" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="LL_SIGN" Type="Byte" />
+    <Property Name="LL_ELSE" Type="Byte" />
+    <Property Name="LS_ELSE" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="YZ_SEAL">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" />
+    <Property Name="LS_ID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LL_SIGN" Type="Byte" />
+    <Property Name="LL_YZGS" Type="Byte" />
+    <Property Name="LS_BMMC" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="LS_BMBH" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="LL_YZLX" Type="Byte" />
+    <Property Name="LS_YZMC" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
+    <Property Name="LL_YZBH" Type="Int32" />
+    <Property Name="LS_ZXRXM1" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZXRBH1" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZXRXM2" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZXRBH2" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LL_ELSE" Type="Byte" />
+    <Property Name="LS_ELSE" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LS_YZGS" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="LS_YZLX" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="LS_SORT" Type="Int32" />
+    <Property Name="LDT_KZRQ" Type="DateTime" />
+    <Property Name="LS_YZJC" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZXRXM3" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LS_ZXRBH3" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="LL_AID" Type="Int32" />
+    <Property Name="LL_BID" Type="Int32" />
+  </EntityType>
+  <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="HT_FILES" EntityType="Self.HT_FILES" />
+    <EntitySet Name="RS_USERS" EntityType="Self.RS_USERS" />
+    <EntitySet Name="WJ_TYPE" EntityType="Self.WJ_TYPE" />
+    <EntitySet Name="YZ_SEAL" EntityType="Self.YZ_SEAL" />
+  </EntityContainer>
+</Schema>

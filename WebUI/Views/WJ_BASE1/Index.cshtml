@@ -1,0 +1,191 @@
+﻿@model IEnumerable<Domain.Entities.WJ_BASE>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_NO)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LL_SIGN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_FBBMMC)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_FBBMBH)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_FBRXM)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_FBRBH)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LDT_FBRRQ)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_FBZT)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_GJC)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_WJSM)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_WJLX)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_WJBZ)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LL_WJCZ)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LL_FJCZ)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_WJHZ)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_FJHZ)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_WJMC)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_FJMC)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_JSRLB)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_JSBMLB)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_JSRXS)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_JSBMXS)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LL_YBGS)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LL_YYGS)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LL_ELSE)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LS_ELSE)
+            </th>
+            <th></th>
+        </tr>
+    
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_NO)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LL_SIGN)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_FBBMMC)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_FBBMBH)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_FBRXM)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_FBRBH)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LDT_FBRRQ)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_FBZT)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_GJC)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_WJSM)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_WJLX)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_WJBZ)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LL_WJCZ)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LL_FJCZ)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_WJHZ)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_FJHZ)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_WJMC)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_FJMC)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_JSRLB)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_JSBMLB)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_JSRXS)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_JSBMXS)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LL_YBGS)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LL_YYGS)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LL_ELSE)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LS_ELSE)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            </td>
+        </tr>
+    }
+    
+    </table>
+</body>
+</html>

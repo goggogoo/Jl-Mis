@@ -1,0 +1,637 @@
+﻿    <link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="../Content/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="../Content/easyui/themes/icon.css" rel="stylesheet" />
+    <script src="../Content/easyui/jquery.min.js"></script>
+    <script src="../Content/easyui/jquery.easyui.min.js"></script>
+    <script src="../Content/easyui/locale/easyui-lang-zh_CN.js"></script>
+    
+    <script src="../../Scripts/printThis.js"></script>
+
+@{
+    Layout = null;
+}
+
+<a id="btnprint" class="easyui-linkbutton" icon="icon-print" href="javascript:printme();">打印</a>
+<a id="btnprint2" class="easyui-linkbutton" icon="icon-print" href="javascript:printme2();">打印2</a>
+<a id="btnprint3" class="easyui-linkbutton" icon="icon-print" href="javascript:preview();">打印3</a>
+<a id="btnprint4" class="easyui-linkbutton" icon="icon-print" href="javascript:printme4();">打印4</a>
+
+
+<table class="easyui-datagrid" id="dg" style="width:1000px;height:500px"></table>
+
+
+<!--<table class="easyui-datagrid" id="dg" style="width:800px;height:250px"
+    data-options="url:'/Ashxs/Valids.ashx?action=getwjlistjson',fitColumns:true,singleSelect:true">
+    <thead>
+		<tr>
+			<th data-options="field:'ID',width:100">Code</th>
+			<th data-options="field:'LS_NO',width:100">Name</th>
+			<th data-options="field:'LL_SIGN',width:100,align:'right'">Price</th>
+			<th data-options="field:'LS_FBBMMC',width:100">Name</th>
+			<th data-options="field:'LS_FBBMBH',width:100">Name</th>
+			<th data-options="field:'LS_FBRXM',width:100">Name</th>
+			<th data-options="field:'LDT_FBRRQ',width:100">Name</th>
+			<th data-options="field:'LS_FBZT',width:100">Name</th>
+
+		</tr>
+    </thead>
+</table>-->
+<p id="pppv">sdfsf</p>
+
+<script>
+    var data;
+    var dadd;
+    $.ajaxSettings.async = false;
+    //$.get("/Ashxs/Valids.ashx?action=getwjlistjson", function (result) {
+    //    data = result;
+    //    dadd = JSON.stringify(result);
+    //}, "json");
+    //$.get("/Ashxs/Valids.ashx?action=getid", function (result) {
+    //    data = result;
+    //    dadd = result;
+    //});
+    $.get("/Ashxs/Valids.ashx?action=getlxlistjson", function (result) {
+        data = result;
+        dadd = result;
+    });
+
+    $.ajaxSettings.async = true;
+    $(function () {
+        $("#pppv").text(dadd);
+        //$('#dg').datagrid('load', {
+        //    LS_NO: '190918002'
+        //});
+    })
+
+    $('#dg').datagrid({
+        title: '入库详情',
+        idField: 'ID',
+        url: '/Ashxs/Valids.ashx?action=getwjlistjson',
+        pagination: true,//表示在datagrid设置分页      
+        rownumbers: true,
+        singleSelect: true,
+        striped: true,//奇偶行使用不同背景色
+        nowrap: true,//数据显示在一行里
+        pageSize:5,
+        pageList: [5, 10, 15, 20],
+        collapsible: true,
+        fitColumns: true,
+        remoteSort: false,
+        loadMsg: "正在努力加载数据，请稍后...",
+        queryParams: {},
+        onLoadSuccess: function (data) {
+            if (data.total == 0) {
+                var body = $(this).data().datagrid.dc.body2;
+                body.find('table tbody').append('暂无数据');
+                $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').hide();
+            }
+            //如果通过调用reload方法重新加载数据有数据时显示出分页导航容器
+            else $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').show();
+
+        },
+
+        columns: [[
+            { field: 'ID', title: 'ID',hidden:false },
+            { field: 'LS_NO', title: 'LS_NO', width: '100px', align: 'left', sortable: true,editor:'text' },
+            { field: 'LL_SIGN', title: 'LL_SIGN', width: '100px', align: 'left', sortable: true, editor: 'numberbox' },
+            { field: 'LS_FBBMMC', title: 'LS_FBBMMC', width: '100px', align: 'left', sortable: true, editor: 'text' },
+            { field: 'LS_FBRXM', title: 'LS_FBRXM', width: '100px', align: 'left', sortable: true, editor: 'text' },
+            {
+                field: 'LS_FBZT', title: 'LS_FBZT', width: '100px', align: 'left', sortable: true,
+                editor: { type: 'validatebox', options: { required: true } }
+            },
+            {
+                field: 'LDT_FBRRQ', title: 'LDT_FBRRQ', width: '100px', editor: 'datebox',
+                formatter: function (value, row, index) {
+                    if (row.LDT_FBRRQ) {
+                        return new Date(value).Format("yyyyMMdd");
+                    } else {
+                        return value;
+                    }
+                }
+            },
+            {
+                field: 'action', title: 'Action', width: 80, align: 'center',
+                formatter: function (value, row, index) {
+                    if (row.editing) {
+                        var s = '<a href="javascript:void(0)" onclick="saverow(this)">Save</a> ';
+                        var c = '<a href="javascript:void(0)" onclick="cancelrow(this)">Cancel</a>';
+                        return s + c;
+                    } else {
+                        var e = '<a href="javascript:void(0)" onclick="editrow(this)">Edit</a> ';
+                        var d = '<a href="javascript:void(0)" onclick="deleterow(this)">Delete</a>';
+                        return e + d;
+                    }
+                }
+            }
+
+        ]],
+        toolbar:
+            [
+                {
+                text: '添加数据',
+                iconCls: 'icon-add',
+                    handler: function () {
+                        $("#dg").datagrid("insertRow", {
+                            index: 0,
+                            row: {}
+                        });
+                        $("#dg").datagrid("beginEdit", 0);
+                    }
+                },
+
+                {
+                    text: '插入数据',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        insert();
+                    }
+                },
+
+                {
+                    text: '编辑数据',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        var hasSelect = $("#dg").datagrid("getSelections");
+                        if (hasSelect.length == 1) { //如果只选择了一行则可以进行修改，否则不操作
+                            //alert(hasSelect[0].name);
+                            var row = hasSelect[0];
+                            rowNumber = $("#dg").datagrid("getRowIndex", row);
+                            $("#dg").datagrid("beginEdit", rowNumber);
+                        }
+                    }
+                },
+                {
+                    text: '删除数据',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        var hasSelect = $("#dg").datagrid("getSelections");
+                        if (hasSelect.length == 1) { //如果只选择了一行则可以进行修改，否则不操作
+                            $.messager.confirm('Confirm', 'Are you sure?', function (r) {
+                                if (r) {
+                                    var row = $("#dg").datagrid("getSelections")[0];
+                                    rowNumber = $("#dg").datagrid("getRowIndex", row);
+                                    $('#dg').datagrid('deleteRow', rowNumber);
+                                }
+                            });
+                        }
+                    }
+                },
+
+                {
+                    text: '保存修改',
+                    iconCls: 'icon-save',
+                    handler: function () {
+                        $('#ww2').window('open');
+                        //var row = $("#dg").datagrid("getSelections")[0];
+                        //rowNumber = $("#dg").datagrid("getRowIndex", row);
+                        //$("#dg").datagrid("endEdit", rowNumber);
+                        
+                    }
+                },
+                {
+                    text: '全部保存',
+                    iconCls: 'icon-save',
+                    handler: function () {
+                        var allrows = $('#dg').datagrid('getRows');
+
+                        //alert(JSON.stringify(allrows));
+                        allrows.forEach(function (value, index) {
+                            $('#dg').datagrid('endEdit', index);
+                        });
+                        var changedrows = $('#dg').datagrid('getChanges');
+                        //alert(JSON.stringify(changedrows));
+
+                        var insertedrows = $('#dg').datagrid('getChanges', "inserted");
+                        var deletedrows = $('#dg').datagrid('getChanges', "deleted");
+                        var updatedrows = $('#dg').datagrid('getChanges', "updated");
+
+                        var effectedrows = new Object();
+
+                        effectedrows['insertedrows'] = insertedrows;
+                        effectedrows['deletedrows'] = deletedrows;
+                        effectedrows['updatedrows'] = updatedrows;
+
+                        //alert(JSON.stringify(effectedrows));
+
+                        $.ajax({
+                            url: '/Ashxs/Valids.ashx?action=saveallrowjson',
+                            data: { 'param': JSON.stringify(effectedrows) },
+                            type: 'POST',
+                            complete: function (xhr) { alert(xhr.responseText)}
+                        }
+                        );
+                    }
+                }
+
+
+            ],
+
+        onBeforeEdit: function (index, row) {
+            row.editing = true;
+            $(this).datagrid('refreshRow', index);
+        },
+        onAfterEdit: function (index, row) {
+            row.editing = false;
+            //var jsonstr = JSON.stringify(row);
+            //var jsonobj = JSON.parse(jsonstr);
+            //delete jsonobj['editing'];
+            //alert(JSON.stringify(jsonobj));
+            $.ajax({
+                url: '/Ashxs/Valids.ashx?action=saverowjson',
+                data: { 'param': JSON.stringify(row) },
+                type: 'POST',
+                complete: function (xhr) {
+                    alert(xhr.responseText)
+                }
+            });
+
+
+
+            $(this).datagrid('refreshRow', index);
+        },
+        onCancelEdit: function (index, row) {
+            row.editing = false;
+            $(this).datagrid('refreshRow', index);
+        },
+        onDblClickRow: function (index, row) {
+            //$.ajax({
+            //    url: '/Ashxs/Valids.ashx?action=getwjrowjson&id=' + row['ID'],
+            //    type: 'POST',
+            //    complete: function (xhr) { alert(xhr.responseText) }
+            //}
+            //);
+            $.ajaxSettings.async = false;
+            $('#fw').form('load', '/Ashxs/Valids.ashx?action=getwjrowjson&id=' + row['ID']);
+
+            $('#filesrc1').attr('href', '/FileUpLoad/Wjfiles/' + row.ID + '/' + $('#filename1').val());
+            $('#filesrc1').text($('#filename1').val());
+            $('#filesrc2').attr('href', '/FileUpLoad/Wjfiles/' + row.ID + '/' + $('#filename2').val());
+            $('#filesrc2').text($('#filename2').val());
+            $('#ww').window('open');
+            $.ajaxSettings.async = true;
+        },
+
+        //onAfterEdit: function (index, data, changes) {
+        //    $.post("${pageContext.request.contextPath}/");
+        //},
+
+        //onClickRow: function (index, row) {
+        //    $("#dg").datagrid("beginEdit", index);
+        //}
+
+    });
+
+    //function updateActions(index) {
+    //    $('#dg').datagrid('updateRow', {
+    //        index: index,
+    //        row: {}
+    //    });
+    //}
+    function getRowIndex(target) {
+        var tr = $(target).closest('tr.datagrid-row');
+        return parseInt(tr.attr('datagrid-row-index'));
+    }
+    function editrow(target) {
+        $('#dg').datagrid('beginEdit', getRowIndex(target));
+    }
+    function deleterow(target) {
+        $.messager.confirm('Confirm', 'Are you sure?', function (r) {
+            if (r) {
+                $('#dg').datagrid('deleteRow', getRowIndex(target));
+            }
+        });
+    }
+    function saverow(target) {
+        $('#dg').datagrid('endEdit', getRowIndex(target));
+       // $('#dg').datagrid('cancelEdit', getRowIndex(target));
+    }
+    function cancelrow(target) {
+        $('#dg').datagrid('cancelEdit', getRowIndex(target));
+    }
+    function insert() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row) {
+            var index = $('#dg').datagrid('getRowIndex', row);
+        } else {
+            index = 0;
+        }
+        var wjid;
+        $.ajaxSettings.async = false;
+        $.get("/Ashxs/Valids.ashx?action=getid", function (result) {
+            wjid = parseInt(result);
+        });
+        $.ajaxSettings.async = true;
+
+        $('#dg').datagrid('insertRow', {
+            index: index,
+            row: {
+                ID: wjid
+            }
+        });
+        $('#dg').datagrid('selectRow', index);
+        $('#dg').datagrid('beginEdit', index);
+    }
+
+
+    Date.prototype.Format = function (fmt) {   
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3),//季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+</script>
+
+    <!--修改窗口-->
+
+    <div id="ww" class="easyui-window" title="修改" collapsible="false" minimizable="false" data-options="modal:true,closed:true,iconCls:'icon-save'"
+        maximizable="false" style="width: 600px; height: 400px; padding: 5px;top:5px; background: #fafafa;">
+
+        <div class="easyui-layout" fit="true">
+            <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+                <form id="fw" method="post">
+                    <table id="tw" cellpadding="3"  style="width: 100%;height:auto">
+                        <tr>
+                            <td>ID</td><td><input class="easyui-textbox" type="text" name="ID" id="ID" style="width: 100%" data-options="required:true,readonly:true"/></td>
+                            <td>单号</td><td><input class="easyui-textbox" type="text" name="LS_NO"id="LS_NO" style="width: 100%"  data-options="required:true"/></td>
+                        </tr>
+                        <tr>
+                            <td>LL_SIGN</td><td><input class="easyui-textbox" type="text" name="LL_SIGN" style="width: 100%" data-options="required:true"/></td>
+                            <td>发布单位</td><td><input class="easyui-textbox" type="text" name="LS_FBBMMC" style="width: 100%" data-options="required:true"/></td>
+                        </tr>
+                        <tr>
+                           <td>发布人</td><td><input class="easyui-textbox" type="text" name="LS_FBRXM" style="width: 100%" data-options="required:true"/></td>
+                           <td>发布时间</td><td><input class="easyui-datebox" type="text" name="LDT_FBRRQ" style="width: 100%" data-options="required:true"/></td>
+                        </tr>
+                        <tr>
+                           <td>文件名称</td><td><input class="easyui-textbox" type="text" name="LS_FBZT" style="width: 100%" data-options="required:true"/></td>
+                           <td>文件类型</td><!--<td><input class="easyui-textbox" type="text" name="LS_WJLX" style="width: 100%" /></td>-->
+                            <td><input class="easyui-combobox" name="LS_WJLX" style="width: 100%" data-options="valueField:'ID',textField:'LS_FBZT',url:'/Ashxs/Valids.ashx?action=getlxlistjson'"/></td>
+
+
+                        </tr>
+                        <tr>
+                           <td>正文</td><td colspan="2">
+                               <a id="filesrc1" href="#" target="_blank">LS_WJMC</a>
+                               <input type="text" name="LS_WJMC" id="filename1" style="display:none"/>
+
+                           </td>
+                           <td><input class="easyui-filebox" name="file1" id="file1" data-options="prompt:'Choose a file...'" style="width:100%"></td>
+                        </tr>
+                        <tr>
+                           <td>附件</td><td colspan="2">
+                               <a id="filesrc2" href="#" target="_blank">LS_FJMC</a>
+                               <input type="text" name="LS_FJMC" id="filename2" style="display:none"/>
+                            </td>
+                            <td><input class="easyui-filebox" name="file2" id="file2" data-options="prompt:'Choose a file...'" style="width:100%"></td>
+                        </tr>
+
+                        <tr>
+                            <td>关键词</td><td colspan="3" ><input class="easyui-textbox" type="text" name="LS_GJC" style="width: 100%"/></td>
+                        </tr>
+                        <tr>
+                            <td>接收人/部门</td><td colspan="3" ><div id="resjsr"><input class="easyui-textbox" type="text" name="LS_JSBMXS" style="width:100%;height:50px" data-options="required:true,multiline:true"/></div></td>
+                        </tr>
+                        <tr>
+                            <td>备注事项</td><td colspan="3" ><input class="easyui-textbox" type="text" name="LS_WJBZ" style="width:100%;height:100px" data-options="required:true,multiline:true"/></td>
+                        </tr>
+
+                    </table>
+                 </form>
+            </div>
+            <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;">
+                <a id="btnsform" class="easyui-linkbutton" icon="icon-ok" href="javascript:void(0)">form提交</a>
+                <a id="btnsjson" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)">json提交</a>
+                <a id="btnsfd" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)">formdata提交</a>
+
+                <a id="btnq" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)">q</a>
+
+            </div>
+        </div>
+        
+    </div>
+
+
+
+
+    <!--修改窗口2-->
+    <div id="ww2" class="easyui-window" title="修改" collapsible="false" minimizable="false" data-options="modal:true,closed:true,iconCls:'icon-save'"
+        maximizable="false" style="width: 250px; height: 250px; padding: 5px; background: #fafafa;">
+        <div class="easyui-layout" fit="true">
+            <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+
+               	<div class="easyui-datalist" title="Checkbox in DataList" style="width:100%;height:100%" data-options="
+			            url: '/Ashxs/Valids.ashx?action=getlxlistjson2',
+			            method: 'get',
+			            checkbox: true,
+                        singleSelect:false,
+			            selectOnCheck: true,
+                        checkOnSelect:true,
+			            onSelect: function(rowIndex, rowData){alert(rowData[0].toString());}
+
+			            ">
+	            </div>
+               
+                </div>
+            </div>
+        </div>
+ 
+
+
+<script>
+    function getid() {
+        $('#aaaa').attr('href', '/FileUpLoad/Wjfiles/' + $('#dg').datagrid('getSelected').ID);
+    }
+    function printme() {
+
+        //var html0 = document.body.innerHTML;
+        //document.body.innerHTML = document.getElementById('fw').innerHTML + '<br/>' + document.getElementById('tw').innerHTML;
+        var pwin = window.open("Print.htm", "print");
+        //pwin.document.write(document.getElementById('fw').innerHTML);
+        //pwin.document.close();
+        //pwin.print();
+        var rows = $('#dg').datagrid('getRows');
+        var str = '<table>';
+        rows.forEach(function (row) {
+            str += '<tr class="page-break" STYLE="display: block; page-break-before: always;"><td>' + row.ID + '</td><td>' + row.LS_FBZT + '</td></tr>';
+        });
+        str += '</table>';
+        str += '<div STYLE="page-break-before:always">This is the second div.</div>'
+        pwin.document.write(str);
+        pwin.document.close();
+
+        pwin.print();
+        pwin.close();
+    }
+    function printme2() {
+        $('#ww input').each(function () {
+            $(this).attr('value', $(this).val());
+        })
+        var headstr = "<html><head><title></title></head><body>";
+        var footstr = "</body>";
+        var newstr = $('#ww').html();
+        var newhtml = headstr + newstr + footstr;
+        var pwin = window.open("Print.htm", "print");
+        pwin.document.write(newhtml);
+        //pwin.document.close();
+        pwin.print();
+        //pwin.close();
+    }
+    function printme4() {
+        $('#fw input').each(function () {
+            $(this).attr('value', $(this).val());
+        })
+        $('#fw').printThis({
+            importCSS: true,
+            importStyle: true,
+            formValues: true,
+            copyTagClasses: true
+        });
+
+
+        }
+
+
+    function preview() {
+        bdhtml = window.document.body.innerHTML;  //定义打印内容
+        sprnstr = "<div id=\"dd\"></div>";  //打印开始位置符合
+        eprnstr = "<div id=\"ddd\"></div>";  //打印结束位置符合
+        prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr) + 19);
+        prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr));
+        window.document.body.innerHTML = bdhtml;
+        //$(".table1").css({ "width": "700px", "float": "none", "margin": "0px auto" });
+        window.print();
+        //window.document.body.innerHTML=bdhtml;
+    }
+
+    $('#btnsform').click(function () {
+        $.messager.progress();	// display the progress bar
+        $('#fw').form('submit', {
+            url: '/Ashxs/Valids.ashx?action=saverowform',
+            onSubmit: function () {
+                var isValid = $(this).form('validate');
+                if (!isValid) {
+                    $.messager.progress('close');	// hide progress bar while the form is invalid
+                }
+                return isValid;	// return false will stop the form submission
+            },
+            success: function () {
+                $.messager.progress('close');	// hide progress bar while submit successfully
+            }
+        });
+    });
+
+    $('#btnsjson').click(function () {
+        $.messager.progress();	// display the progress bar
+        $('#fw').form('submit', {
+            url: '/Ashxs/Valids.ashx?action=saverowjson',
+            onSubmit: function (param) {
+                var isValid = $(this).form('validate');
+                param.param = JSON.stringify($('#fw').serializeObject());
+                if (!isValid) {
+                    $.messager.progress('close');	// hide progress bar while the form is invalid
+                }
+                return isValid;	// return false will stop the form submission
+            },
+            success: function () {
+                $.messager.progress('close');	// hide progress bar while submit successfully
+            }
+        });
+    });
+    $('#btnsfd').click(function () {
+        if (!$('#fw').form('validate')) {
+            return alert('验证不通过');
+        };
+        $.messager.progress();
+        var fd = new FormData($('#fw')[0]);
+        //fd.append('fff', 'gggg');
+
+        //fd.append('photo', $('#photo')[0].files[0]);
+        //var value = $('#file2').filebox('getValue');
+        //fd.append('file2', $('#file2').next().find('input[type=file]')[0].files[0]);
+
+        var objData1 = {};
+        fd.forEach((value, key) => objData1[key] = value);
+        alert(JSON.stringify(objData1));
+
+        //return;
+        $.ajax({
+            url: '/Ashxs/Valids.ashx?action=saverowformfile',
+            type: 'post',
+            processData: false,
+            contentType: false,
+            data: fd,
+            success: function (result) {
+                $.messager.progress('close');
+                alert(result);
+            }
+        }
+        );
+    });
+ 
+
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+    $('#btnq').dblclick(function () {
+        preview();
+        //$('#ww2').window('open');
+    });
+    $('#resjsr').dblclick(function () {
+        $('#ww2').window('open');
+    });
+    $('#dl').datalist({
+        url: '/Ashxs/Valids.ashx?action=getlxlistjson2',
+        checkbox: true,
+        lines: true
+    });
+
+
+
+</script>
+<style>
+    .textbox {
+        border: 0px;
+    }
+   #tw {
+        overflow: hidden;
+        table-layout: fixed;
+
+    }
+
+    #tw td{
+        width:25%;
+          border: 1px solid #95B8E7;
+          background-color: #fafafa;
+          vertical-align: middle;
+          text-align:center;
+          position: relative;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+    }
+</style>

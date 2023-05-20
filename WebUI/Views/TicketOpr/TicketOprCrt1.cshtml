@@ -1,0 +1,617 @@
+﻿<link href="../Content/easyui/themes/default/easyui.css" rel="stylesheet" />
+<link href="../Content/easyui/themes/icon.css" rel="stylesheet" />
+<link href="../Content/easyui/demo.css" rel="stylesheet" />
+
+<script src="../Content/easyui/jquery.min.js"></script>
+<script src="../Content/easyui/jquery.easyui.min.js"></script>
+<script src="../Content/easyui/locale/easyui-lang-zh_CN.js"></script>
+
+<script src="../../Scripts/printThis.js"></script>
+
+@{
+    Layout = null;
+}
+@{
+    string username = "";
+    string userbz = "";
+    Domain.Entities.RS_USERS user = (Domain.Entities.RS_USERS)HttpContext.Current.Session["user"];
+    if (user != null)
+    {
+        username = user.LS_XM;
+        userbz = user.LS_BZ;
+    }
+    else
+    {
+        username = "ppp";
+    }
+}
+
+<body class="easyui-layout" style="width:auto;height:auto;">
+    <div data-options="region:'west',split:true" style="width:200px;padding:0 0 0 0;border:none;">
+
+        <table class="easyui-datagrid" id="ticketoprl" style="width:auto;height:auto" fit="true"></table>
+    </div>
+    <div data-options="region:'center',split:true" style="width:auto;padding:0px 0px 0px 50px;">
+        <div style="padding:5px;background:#fafafa;width:100%;border:1px solid #ccc">
+            <a href="#" onclick="openww()" class="easyui-linkbutton" plain="true" iconCls="icon-add">拟定</a>
+            <a href="#" onclick="imp()" class="easyui-linkbutton" plain="true" iconCls="icon-reload">导入</a>
+            <a href="#" onclick="toprint()" class="easyui-linkbutton" plain="true" iconCls="icon-search">打印</a>
+            <a href="#" onclick="printme()" class="easyui-linkbutton" plain="true" iconCls="icon-print">Print</a>
+            <a href="#" onclick="send()" class="easyui-linkbutton" plain="true" iconCls="icon-help">发送</a>
+            <a href="#" onclick="saveall()" class="easyui-linkbutton" plain="true" iconCls="icon-save">保存</a>
+        </div>
+
+        <div id="divr" style="visibility:hidden;">
+            <p>
+            <h2 style="width:800px;text-align: center;">电气倒闸操作票</h2>
+            </p>
+            <input type="file" id="impfile" onchange="choosetxt()" hidden accept="text/plain" />
+            <form id="ff" method="post">
+                <div style="width: 800px;">
+                    单位：<input type="text" name="LSDW" id="LSDW" style="width: 100px;border:none;outline:medium" readonly="readonly" />
+                    编号：<input type="text" name="LSNO" id="LSNO" style="width: 100px;border:none;outline:medium" readonly="readonly" />
+                    <span style="float: right;padding-right:20px;"><input type="text" name="ID" id="id"
+                            style="width: 50px;border:0px" readonly="readonly" /><input type="text" name="LLSIGN"
+                            id="LLSIGN" style="width: 50px;border:0px" /></span>
+                </div>
+                <table id="mtb" style="width:800px;">
+                    <thead id="thdd">
+                        <tr>
+                            <td class="aline" style="width:120px">操作开始时间</td>
+                            <td class="aline" style="width:280px"><input class="easyui-datetimebox" name="LDTOPRS"
+                                    id="LDTOPRS" data-options="showSeconds:false,formatter:myformatter,parser:myparser"
+                                    style="width:100%" /></td>
+                            <td class="aline" style="width:120px">操作结束时间</td>
+                            <td class="aline"><input class="easyui-datetimebox" name="LDTOPRE" id="LDTOPRE"
+                                    data-options="showSeconds:false,formatter:myformatter,parser:myparser"
+                                    style="width:100%" /></td>
+                        </tr>
+                        <tr>
+                            <td class="aline">操作任务</td>
+                            <td class="aline" colspan="3">
+                                <input class="easyui-textbox" name="LSRW" id="LSRW" style="width:100%;height:50px;"
+                                    data-options="required:true,multiline:true" />
+                            </td>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td class="aline" colspan="4" style="height:auto;">
+                                <table border="0px" class="easyui-datagrid" id="ticketoprr"
+                                    style="width:auto;height:500px;" fit="false">
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot id="tfdd">
+                        <tr>
+                            <td colspan="4">备注：
+                                <textarea name="LSBZ" id="LSBZ" class="uline"
+                                    style="width:700px;height:40px;overflow:hidden"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                操作人：<input type="text" name="LSCZR" id="LSCZR" class="uline" style="width: 100px;" />
+                                监护人：<input type="text" name="LSJHR" id="LSJHR" class="uline" style="width: 100px;" />
+                                值班负责人：<input type="text" name="LSFZR" id="LSFZR" class="uline" style="width: 100px;" />
+                                值长：<input class="easyui-textbox underline" name="LSZZR" id="LSZZR"
+                                    style="width: 100px;" />
+                            </td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </form>
+            <div style="display:none">
+                <div id="dd"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+
+<div id="ww" class="easyui-window" title="修改" collapsible="false" minimizable="false"
+    data-options="modal:true,closed:true,iconCls:'icon-save'" maximizable="false"
+    style="width: 700px; height: 500px; padding: 5px; background: #fafafa;">
+    <div class="easyui-layout" fit="true">
+        <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+            <form id="fw" method="post">
+                <table id="tw" cellpadding="3" style="width: 95%;height:auto;">
+                    <tr>
+                        <td style="width:100px;">操作类别</td>
+                        <td colspan="3">
+                            <select class="easyui-combobox" name="LLTYPE" style="width:200px;">
+                                <option value="1">电气</option>
+                                <option value="2">机械</option>
+                            </select>
+                    </tr>
+
+                    <tr>
+                        <td>操作内容</td>
+                        <td colspan="3"><input class="easyui-textbox" type="text" name="LSRW"
+                                style="width:100%;height:50px" data-options="required:true,multiline:true" /></td>
+                    </tr>
+                    <tr>
+                        <td>拟定人</td>
+                        <td><input class="easyui-textbox" type="text" name="LSCZR" id="LSCZR1" style="width: 100%"
+                                data-options="required:true" /></td>
+                        <td>发布单位</td>
+                        <td><input class="easyui-textbox" type="text" name="LSDW" id="LSDW1" style="width: 100%" /></td>
+                    </tr>
+
+                </table>
+            </form>
+        </div>
+        <div region="south" border="false" style="text-align: right; height: 80px; line-height: 30px;">
+            <a id="btns" class="easyui-linkbutton" icon="icon-ok" href="javascript:void(0)">保存</a>
+            <a id="btnc" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)"
+                onclick="$('#ww').window('close');">取消</a>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    function openww() {
+        $('#fw').form('clear');
+        var username = '@username';
+        $("#LSCZR1").textbox('setValue', username);
+        $("#LSDW1").textbox('setValue', '@userbz');
+        //$("#LSRW").textbox('setValue', '');
+        $('#divr').hide();
+        $('#ww').window('open');
+    }
+    function send(){
+        $.ajaxSettings.async = false;
+        $('#ticketoprr').datagrid('reload');
+        $.ajaxSettings.async = true;
+        if(!$('#ff').form('validate')){
+            alert('无数据1');
+            return;
+            }
+        if($('#ticketoprr').datagrid('getRows').length < 2)
+        {
+            alert('无数据2');
+            return;
+        }
+        $.ajax({
+            url: '/Ashxs/Tktopr.ashx?action=sendtkt',
+            data: { 'id': $('#id').val() ,'sign': 1 },
+            type: 'POST',
+            complete: function (xhr) { alert(xhr.responseText) }
+        }); 
+    }
+    function saveall() {
+        $.messager.progress();	// display the progress bar
+        $('#ff').form('submit', {
+            url: '/Ashxs/Tktopr.ashx?action=savesumform',
+            onSubmit: function () {
+                var isValid = $(this).form('validate');
+                if (!isValid) {
+                    $.messager.progress('close');
+                }
+                return isValid;
+            },
+            success: function (result) {
+                $.messager.progress('close');
+                alert(result);
+            }
+        });
+
+        var allrows = $('#ticketoprr').datagrid('getRows');
+        allrows.forEach(function (value, index) {
+            $('#ticketoprr').datagrid('endEdit', index);
+        });
+        var changedrows = $('#ticketoprr').datagrid('getChanges');
+        var insertedrows = $('#ticketoprr').datagrid('getChanges', "inserted");
+        var deletedrows = $('#ticketoprr').datagrid('getChanges', "deleted");
+        var updatedrows = $('#ticketoprr').datagrid('getChanges', "updated");
+        var effectedrows = new Object();
+        effectedrows['insertedrows'] = insertedrows;
+        effectedrows['deletedrows'] = deletedrows;
+        effectedrows['updatedrows'] = updatedrows;
+        effectedrows['pid'] = $('#id').val();
+        $.ajax({
+            url: '/Ashxs/Tktopr.ashx?action=savetktdet',
+            data: { 'param': JSON.stringify(effectedrows) },
+            type: 'POST',
+            complete: function (xhr) { alert(xhr.responseText) }
+        }
+        );
+
+
+    }
+
+
+
+
+    function imp() {
+        $('#impfile').click();
+    }
+    function choosetxt() {
+        //$('#ticketoprr').datagrid('options').url = '';
+        for (var i = $('#ticketoprr').datagrid('getRows').length - 1; i >= 0; i--) {
+            $('#ticketoprr').datagrid('deleteRow', i);
+        }
+        var pid = $("#id").val();
+
+        var f = $("#impfile").prop('files');
+        //var f = document.getElementById("impfile").files;
+
+        var reader = new FileReader();
+
+        var file = f[0];
+
+        reader.readAsText(file);
+        reader.onload = function () {
+            if (reader.result) {
+                var rds = reader.result.split(/\r\n/);
+                var arr = [];
+                rds.forEach(function (item) {
+                    if (item.length > 1) $('#ticketoprr').datagrid('appendRow', { LSXM: item.toString() });
+                    //if (item.length > 1) arr.push({"PID":pid, "LSXM": item.toString() });
+                });
+                //$('#ticketoprr').datagrid({
+                //    data: arr
+                //});
+                $('#impfile').val('');
+
+                //alert(reader.result);
+            }
+        };
+    }
+
+    $('#btns').click(function () {
+        $.messager.progress();	// display the progress bar
+        $('#fw').form('submit', {
+            url: '/Ashxs/Tktopr.ashx?action=savetos',
+            onSubmit: function () {
+                var isValid = $(this).form('validate');
+                if (!isValid) {
+                    $.messager.progress('close');	// hide progress bar while the form is invalid
+                }
+                return isValid;	// return false will stop the form submission
+            },
+            success: function (result) {
+                $.messager.progress('close');	// hide progress bar while submit successfully
+                alert(result);
+                $('#ww').window('close');
+                $.ajaxSettings.async = false;
+                $('#ticketoprl').datagrid('reload');
+                $('#ticketoprl').datagrid('selectRow', 0);
+                $.ajaxSettings.async = true;
+
+            }
+        });
+    });
+
+    $(function () {
+
+
+        $('#ticketoprl').datagrid({
+            title: '入库详情',
+            idField: 'ID',
+            url: '/Ashxs/Tktopr.ashx?action=gettktlistjson',
+            pagination: true,//表示在datagrid设置分页      
+            rownumbers: true,
+            singleSelect: true,
+            striped: true,//奇偶行使用不同背景色
+            nowrap: true,//数据显示在一行里
+
+            collapsible: true,
+            fitColumns: true,
+            remoteSort: false,
+            loadMsg: "正在努力加载数据，请稍后...",
+            queryParams: {sign:0},
+            onLoadSuccess: function (data) {
+                if (data.total == 0) {
+                    var body = $(this).data().datagrid.dc.body2;
+                    body.find('table tbody').append('暂无数据');
+                    $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').hide();
+                }
+                //如果通过调用reload方法重新加载数据有数据时显示出分页导航容器
+                else $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').show();
+
+            },
+
+            columns: [[
+                { field: 'ID', title: 'ID', hidden: true },
+                { field: 'LSNO', title: 'LSNO', hidden: true , width: '100px', align: 'left', sortable: true },
+                { field: 'LSRW', title: 'LSRW', width: '100px', align: 'left', sortable: true },
+                { field: 'LLSIGN', title: 'LLSIGN', width: '100px', align: 'left', sortable: true },
+                { field: 'LDTOPRS', title: 'LDTOPRS', width: '100px', align: 'left', sortable: true },
+
+
+            ]],
+
+            //onClickRow: function (index, row) {
+            //    //alert(row.ID);
+            //    //$.ajaxSettings.async = false;
+            //    $('#ff').form('load', '/Ashxs/Tktopr.ashx?action=gettktsumrowjson&id=' + row['ID']);
+            //    $('#ticketoprr').datagrid('options').url = '/Ashxs/Tktopr.ashx?action=gettktdetlistjson&pid=' + (row.ID).toString();
+            //    $('#ticketoprr').datagrid('load');
+            //    //$.ajaxSettings.async = true;
+            //    },
+            onSelect: function (index, row) {
+
+                //$.ajaxSettings.async = false;
+                //$.get('/Ashxs/Tktopr.ashx?action=gettktsumrowjson&id=' + row['ID'], function (result) {
+                //    alert(result);
+                //});
+                //$.ajaxSettings.async = true;
+
+
+                $('#ticketoprr').datagrid('options').url = '/Ashxs/Tktopr.ashx?action=gettktdetlistjson&pid=' + (row.ID).toString();
+                $('#ticketoprr').datagrid('load');
+                $.ajaxSettings.async = false;
+                $('#ff').form('load', '/Ashxs/Tktopr.ashx?action=gettktsumrowjson&id=' + row['ID']);
+                if ($('#LLSIGN').val() == 0) {
+                    $('#LDTOPRS').datebox("readonly", "readonly");
+                    $('#LDTOPRE').datebox("readonly", "readonly");
+                    $('#LSCZR').attr("readonly", "readonly");
+                    $('#LSJHR').attr("readonly", "readonly");
+                    $('#LSFZR').attr("readonly", "readonly");
+                    $('#LSZZR').textbox('textbox').attr("readonly", "readonly");
+                } else {
+                    $('#LDTOPRS').datebox("readonly", "");
+                    $('#LSCZR').attr("readonly", "");
+                }
+                $.ajaxSettings.async = true;
+
+                $('#divr').attr("style", "visibility:visible");
+
+
+
+                //$('#divr').show();
+
+            }
+
+        });
+        $("#ticketoprl").datagrid("getPager").pagination({
+            showPageList: false,
+            showPageInfo: false,
+            beforePageText: '',//页数文本框前显示的汉字 
+            afterPageText: '/ {pages} ',
+        });
+
+
+        $('#ticketoprr').datagrid({
+            idField: 'ID',
+            url: '',
+            pagination: false,//表示在datagrid设置分页      
+            rownumbers: true,
+            singleSelect: true,
+            nowrap: true,//数据显示在一行里
+            collapsible: false,
+            fitColumns: true,
+            remoteSort: false,
+            loadMsg: "正在努力加载数据，请稍后...",
+            queryParams: {},
+            onLoadSuccess: function (data) {
+                if (data.total == 0) {
+                    var body = $(this).data().datagrid.dc.body2;
+                    body.find('table tbody').append('暂无数据');
+                    $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').hide();
+                }
+            },
+
+            columns: [[
+                { field: 'PID', title: 'PID', hidden: false },
+                { field: 'ID', title: 'ID', hidden: false },
+                { field: 'LLMN', title: 'LLMN', width: '30px', align: 'left'},
+                { field: 'LLSJ', title: 'LLSJ', width: '30px', align: 'left'},
+                { field: 'LSXM', title: 'LSXM', width: '500px', align: 'left', sortable: true, editor: 'text' },
+                {
+                    field: 'LDTSJ', title: 'LDTSJ', width: '50px', editor: 'datebox',
+                    formatter: function (value, row, index) {
+                        if (row.LDT_FBRRQ) {
+                            return new Date(value).Format("yyyyMMdd");
+                        } else {
+                            return value;
+                        }
+                    }
+                }
+
+            ]],
+            toolbar:
+                [
+                    {
+                        text: '添加',
+                        iconCls: 'icon-add',
+                        handler: function () {
+
+                            $('#ticketoprr').datagrid('appendRow', { status: 'P' });
+                            editIndex = $('#ticketoprr').datagrid('getRows').length - 1;
+                            $('#ticketoprr').datagrid('selectRow', editIndex)
+                                .datagrid('beginEdit', editIndex);
+                        }
+                    },
+
+                    {
+                        text: '插入',
+                        iconCls: 'icon-add',
+                        handler: function () {
+                            var row = $('#ticketoprr').datagrid('getSelected');
+                            var index;
+                            if (row) {
+                                index = $('#ticketoprr').datagrid('getRowIndex', row);
+                            } else {
+                                index = 0;
+                            };
+                            $('#ticketoprr').datagrid('insertRow', { index: index, row: {} });
+                            $('#ticketoprr').datagrid('selectRow', index).datagrid('beginEdit', index);
+
+                        }
+                    },
+
+                    {
+                        text: '删除',
+                        iconCls: 'icon-edit',
+                        handler: function () {
+                            var hasSelect = $("#ticketoprr").datagrid("getSelections");
+                            if (hasSelect.length == 1) {
+                                $.messager.confirm('Confirm', 'Are you sure?', function (r) {
+                                    if (r) {
+                                        var row = $("#ticketoprr").datagrid("getSelections")[0];
+                                        rowNumber = $("#ticketoprr").datagrid("getRowIndex", row);
+                                        $('#ticketoprr').datagrid('deleteRow', rowNumber);
+                                    }
+                                });
+                            }
+                        }
+                    },
+
+
+                ],
+            onClickRow: function (index, row) {
+
+                $('#ticketoprr').datagrid('beginEdit', index);
+            }
+
+        });
+
+
+
+    });
+
+    function printme() {
+        $('#divr input').each(function () {
+            $(this).attr('value', $(this).val());
+        })
+        $('#divr').printThis({
+            importCSS: true,
+            importStyle: true,
+            formValues: true,
+            copyTagClasses: true
+        });
+    }
+    function toprint() {
+        var strs = "<table id='ptb' style='width:800px;'><thead>";
+        strs += "<tr><td colspan='11' class='uline'>倒闸操作票</td></tr>"
+        strs += "<tr><td colspan='4'>操作开始时间:</td><td colspan='2'>" + $('#LDTOPRS').datetimebox('getValue') + "</td>";
+        strs += "<td colspan='2'>操作结束时间:</td><td colspan='3'>" + $('#LDTOPRE').datetimebox('getValue') + "</td></tr>";
+        strs += "<tr><td colspan='4'>操作任务:</td><td colspan='7'>" + $('#LSRW').textbox('getValue') + "</td></tr></thead><tbody>";
+        $('#ticketoprr').datagrid('getRows').forEach(function (elem, i) {
+            strs += "<tr><td style='width:4%'>" + i + "</td><td></td><td></td><td colspan='7' >" + elem['LSXM'] + "</td><td style='width:6%'></td></tr>";
+        });
+        strs += "<tbody><tfoot><tr><td class='uline' colspan='3'>备注：</td><td colspan='8' class='uline'>" + $('#LSBZ').val() + "</td></tr>";
+        strs += "<tr><td style='width:12.5%' colspan='3'>操作人：</td><td style='width:12.5%' class='uline'>" + $('#LSCZR').val() + "</td>";
+        strs += "<td style='width:12.5%'>监护人：</td><td style='width:12.5%'>" + $('#LSJHR').val() + "</td>";
+        strs += "<td style='width:12.5%'>值班负责：</td><td style='width:12.5%'>" + $('#LSFZR').val() + "</td>";
+        strs += "<td style='width:12.5%'>值长：</td><td colspan='2' style='width:12.5%'>" + $('#LSZZR').val() + "</td></tr></tfoot></table>";
+
+        $('#dd').html(strs);
+        $('#dd').printThis({
+            importCSS: true,
+            importStyle: true,
+            formValues: true,
+            copyTagClasses: true
+        });
+
+    }
+
+
+    function myformatter(date) {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        var d = date.getDate();
+        var s = date.getHours();
+        var f = date.getMinutes();
+        return y + '年' + (m < 10 ? ('0' + m) : m) + '月' + (d < 10 ? ('0' + d) : d) + '日' + (s < 10 ? ('0' + s) : s) + '时' + (f < 10 ? ('0' + f) : f) + '分';
+    }
+    function myparser(s) {
+        if (!s) return new Date();
+        var ss = (s.split(''));
+        var y = parseInt(ss[0] + ss[1] + ss[2] + ss[3], 10);
+        var m = parseInt(ss[5] + ss[6], 10);
+        var d = parseInt(ss[8] + ss[9], 10);
+        var s = parseInt(ss[11] + ss[12], 10);
+        var f = parseInt(ss[14] + ss[15], 10);
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+            return new Date(y, m - 1, d, s, f);
+        } else {
+            return new Date();
+        }
+    }
+
+
+
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3),//季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+</script>
+
+<style>
+    #LS_WJBZ+.textbox {
+        border: 0px;
+    }
+
+    #LDTOPRS+.textbox,
+    #LDTOPRE+.textbox,
+    #LSRW+.textbox {
+        border: 0px;
+    }
+
+    .underline+.textbox {
+        border-bottom: 1px solid #000;
+        border-top: 0;
+        border-left: 0;
+        border-right: 0;
+        outline: none;
+        background: transparent;
+        outline: medium;
+    }
+
+    .uline {
+        border-bottom: 1px solid #000 !important;
+        border-top: 0 !important;
+        border-left: 0 !important;
+        border-right: 0 !important;
+        outline: medium !important;
+        resize: none;
+    }
+
+    table td {
+        vertical-align: middle;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    #ptb td {
+        border: 1px solid #ccc;
+        padding: 5px;
+        font-family: "Times New Roman", Times, serif;
+    }
+
+    .aline {
+        border: 1px solid #ccc;
+        padding: 0px;
+        font-family: "Times New Roman", Times, serif;
+    }
+
+    .textbox,
+    .textbox .textbox-text {
+        border-radius: 0px;
+    }
+</style>

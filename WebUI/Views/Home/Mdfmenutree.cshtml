@@ -1,0 +1,160 @@
+﻿    <link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="../Content/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="../Content/easyui/themes/icon.css" rel="stylesheet" />
+    <script src="../Content/easyui/jquery.min.js"></script>
+    <script src="../Content/easyui/jquery.easyui.min.js"></script>
+    <script src="../Content/easyui/locale/easyui-lang-zh_CN.js"></script>
+    
+    <script src="../../Scripts/printThis.js"></script>
+
+@{Layout = null;}
+
+<table id="dg" style="width:auto;height:auto"></table>
+
+<script>
+    var editingId;
+    $('#dg').treegrid({
+        url: '/Ashxs/Staffmng.ashx?action=getpartmtree',
+        idField: 'NODE',
+        treeField: 'DISPLAYTEXT',
+        columns: [[
+            { field: 'NODE', title: 'NODE', width: '100px', editor: 'numberbox' },
+            { field: 'PARENTNODE', title: 'PARENTNODE', width: '100px', editor: 'numberbox'},
+            { field: 'DISPLAYTEXT', title: 'DISPLAYTEXT', width: '100px', editor: 'text' },
+            { field: 'TAGDATA', title: 'TAGDATA', width: '200px', editor: 'text'},
+        ]],
+        toolbar:
+            [
+                {
+                    text: '添加数据',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        var node = $('#dg').treegrid('getSelected');
+                        var nodeid;
+                        $.ajax({
+                            url: '/Ashxs/Valids.ashx?action=getnextid',
+                            async: false,
+                            success: function (data) {
+                                nodeid = data;
+                            }
+                        });
+                        $('#dg').treegrid('append', {
+                            parent: node.NODE,
+                            data: [{
+                                NODE: nodeid,
+                                PARENTNODE: node.NODE,
+                                DISPLAYTEXT: 'New Task',
+                                TAGDATA: node.TAGDATA + nodeid + '#'
+                            }]
+                        });
+                        $('#dg').treegrid('beginEdit', nodeid);
+                        $('#dg').treegrid('endEdit', nodeid);
+                    }
+                },
+                {
+                    text: '删除数据',
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        var node = $('#dg').treegrid('getSelected');
+                        if (node) {
+                            $.messager.confirm('Confirm', 'Are you sure?', function (r) {
+                                if (r) {
+                                    $('#dg').treegrid('remove', node.NODE);
+                                }
+                            });
+                        }
+                    }
+                },
+                {
+                    text: '编辑数据',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        if (editingId != undefined) {
+                            $('#dg').treegrid('endEdit', editingId);
+                            editingId = undefined;
+                            $(this).find('span .l-btn-text').text('编辑数据');
+                            return;
+                        }
+                        var row = $('#dg').treegrid('getSelected');
+                        if (row) {
+                            editingId = row.NODE;
+                            $(this).find('span .l-btn-text').text('结束编辑');
+                            $('#dg').treegrid('beginEdit', editingId);
+                        }
+                    }
+                },
+                {
+                    text: '刷新数据',
+                    iconCls: 'icon-reload',
+                    handler: function () {
+                        $("#dg").treegrid("reload")
+                    }
+                },
+
+                {
+                    text: '保存修改',
+                    iconCls: 'icon-save',
+                    handler: function () {
+                        var insertedrows = $('#dg').treegrid('getChanges', "inserted");
+                        var deletedrows = $('#dg').treegrid('getChanges', "deleted");
+                        var updatedrows = $('#dg').treegrid('getChanges', "updated");
+
+                        var effectedrows = new Object();
+
+                        effectedrows['inoruprows'] = insertedrows.concat(updatedrows);
+                        effectedrows['deletedrows'] = deletedrows;
+
+                        alert(JSON.stringify(effectedrows));
+
+                        $.ajax({
+                            url: '/Ashxs/Staffmng.ashx?action=savebmtv',
+                            data: { 'param': JSON.stringify(effectedrows) },
+                            type: 'POST',
+                            complete: function (xhr) { alert(xhr.responseText) }
+                        }
+                        );
+                    }
+                }
+
+
+            ],
+
+        onClickRow: function (index, row) {
+            var allrows = $('#dg').treegrid('getRows');
+            allrows.forEach(function (value, index0) {
+                if (index != index0) $('#dg').treegrid('endEdit', index0);
+            });
+            $("#dg").treegrid("beginEdit", index);
+        },
+
+    });
+  
+</script>
+
+
+
+<script>
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+</script>
+<style>
+    .textbox {
+        border: 0px;
+    }
+
+</style>

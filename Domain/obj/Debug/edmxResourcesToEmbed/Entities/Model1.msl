@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ModelStoreContainer" CdmEntityContainer="Entities">
+    <EntitySetMapping Name="HT_FILES">
+      <EntityTypeMapping TypeName="Model.HT_FILES">
+        <MappingFragment StoreEntitySet="HT_FILES">
+          <ScalarProperty Name="HT_NO" ColumnName="HT_NO" />
+          <ScalarProperty Name="SIGN" ColumnName="SIGN" />
+          <ScalarProperty Name="FAG" ColumnName="FAG" />
+          <ScalarProperty Name="RQ" ColumnName="RQ" />
+          <ScalarProperty Name="NR" ColumnName="NR" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RS_USERS">
+      <EntityTypeMapping TypeName="Model.RS_USERS">
+        <MappingFragment StoreEntitySet="RS_USERS">
+          <ScalarProperty Name="ID" ColumnName="ID" />
+          <ScalarProperty Name="LS_GH" ColumnName="LS_GH" />
+          <ScalarProperty Name="LS_XM" ColumnName="LS_XM" />
+          <ScalarProperty Name="LS_PWD" ColumnName="LS_PWD" />
+          <ScalarProperty Name="LI_XB" ColumnName="LI_XB" />
+          <ScalarProperty Name="LDT_CSRQ" ColumnName="LDT_CSRQ" />
+          <ScalarProperty Name="LDT_GZRQ" ColumnName="LDT_GZRQ" />
+          <ScalarProperty Name="LS_XL" ColumnName="LS_XL" />
+          <ScalarProperty Name="LS_ZC" ColumnName="LS_ZC" />
+          <ScalarProperty Name="LS_BZ" ColumnName="LS_BZ" />
+          <ScalarProperty Name="LS_ZW" ColumnName="LS_ZW" />
+          <ScalarProperty Name="LS_SFZ" ColumnName="LS_SFZ" />
+          <ScalarProperty Name="LS_SJH" ColumnName="LS_SJH" />
+          <ScalarProperty Name="LS_DHH" ColumnName="LS_DHH" />
+          <ScalarProperty Name="LI_ZT" ColumnName="LI_ZT" />
+          <ScalarProperty Name="LI_JB" ColumnName="LI_JB" />
+          <ScalarProperty Name="LI_SIGN" ColumnName="LI_SIGN" />
+          <ScalarProperty Name="LS_ZSMC1" ColumnName="LS_ZSMC1" />
+          <ScalarProperty Name="LS_ZSBH1" ColumnName="LS_ZSBH1" />
+          <ScalarProperty Name="LS_ZSMC2" ColumnName="LS_ZSMC2" />
+          <ScalarProperty Name="LS_ZSBH2" ColumnName="LS_ZSBH2" />
+          <ScalarProperty Name="LS_QX" ColumnName="LS_QX" />
+          <ScalarProperty Name="LS_MEMO" ColumnName="LS_MEMO" />
+          <ScalarProperty Name="LB_ZP" ColumnName="LB_ZP" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="WJ_TYPE">
+      <EntityTypeMapping TypeName="Model.WJ_TYPE">
+        <MappingFragment StoreEntitySet="WJ_TYPE">
+          <ScalarProperty Name="ID" ColumnName="ID" />
+          <ScalarProperty Name="LL_SORT" ColumnName="LL_SORT" />
+          <ScalarProperty Name="LS_ID" ColumnName="LS_ID" />
+          <ScalarProperty Name="LL_SIGN" ColumnName="LL_SIGN" />
+          <ScalarProperty Name="LL_ELSE" ColumnName="LL_ELSE" />
+          <ScalarProperty Name="LS_ELSE" ColumnName="LS_ELSE" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="YZ_SEAL">
+      <EntityTypeMapping TypeName="Model.YZ_SEAL">
+        <MappingFragment StoreEntitySet="YZ_SEAL">
+          <ScalarProperty Name="ID" ColumnName="ID" />
+          <ScalarProperty Name="LS_ID" ColumnName="LS_ID" />
+          <ScalarProperty Name="LL_SIGN" ColumnName="LL_SIGN" />
+          <ScalarProperty Name="LL_YZGS" ColumnName="LL_YZGS" />
+          <ScalarProperty Name="LS_BMMC" ColumnName="LS_BMMC" />
+          <ScalarProperty Name="LS_BMBH" ColumnName="LS_BMBH" />
+          <ScalarProperty Name="LL_YZLX" ColumnName="LL_YZLX" />
+          <ScalarProperty Name="LS_YZMC" ColumnName="LS_YZMC" />
+          <ScalarProperty Name="LL_YZBH" ColumnName="LL_YZBH" />
+          <ScalarProperty Name="LS_ZXRXM1" ColumnName="LS_ZXRXM1" />
+          <ScalarProperty Name="LS_ZXRBH1" ColumnName="LS_ZXRBH1" />
+          <ScalarProperty Name="LS_ZXRXM2" ColumnName="LS_ZXRXM2" />
+          <ScalarProperty Name="LS_ZXRBH2" ColumnName="LS_ZXRBH2" />
+          <ScalarProperty Name="LL_ELSE" ColumnName="LL_ELSE" />
+          <ScalarProperty Name="LS_ELSE" ColumnName="LS_ELSE" />
+          <ScalarProperty Name="LS_YZGS" ColumnName="LS_YZGS" />
+          <ScalarProperty Name="LS_YZLX" ColumnName="LS_YZLX" />
+          <ScalarProperty Name="LS_SORT" ColumnName="LS_SORT" />
+          <ScalarProperty Name="LDT_KZRQ" ColumnName="LDT_KZRQ" />
+          <ScalarProperty Name="LS_YZJC" ColumnName="LS_YZJC" />
+          <ScalarProperty Name="LS_ZXRXM3" ColumnName="LS_ZXRXM3" />
+          <ScalarProperty Name="LS_ZXRBH3" ColumnName="LS_ZXRBH3" />
+          <ScalarProperty Name="LL_AID" ColumnName="LL_AID" />
+          <ScalarProperty Name="LL_BID" ColumnName="LL_BID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

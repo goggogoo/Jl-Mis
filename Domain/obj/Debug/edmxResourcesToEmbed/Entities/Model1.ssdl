@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Model.Store" Provider="Oracle.ManagedDataAccess.Client" ProviderManifestToken="11.2" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="HT_FILES">
+    <Key>
+      <PropertyRef Name="HT_NO" />
+    </Key>
+    <Property Name="HT_NO" Type="varchar2" MaxLength="30" Nullable="false" />
+    <Property Name="SIGN" Type="number" Precision="2" Scale="0" />
+    <Property Name="FAG" Type="varchar2" MaxLength="10" />
+    <Property Name="RQ" Type="date" />
+    <Property Name="NR" Type="blob" />
+  </EntityType>
+  <EntityType Name="RS_USERS">
+    <Key>
+      <PropertyRef Name="LS_GH" />
+    </Key>
+    <Property Name="ID" Type="number" Precision="10" Scale="0" />
+    <Property Name="LS_GH" Type="varchar2" MaxLength="10" Nullable="false" />
+    <Property Name="LS_XM" Type="varchar2" MaxLength="10" />
+    <Property Name="LS_PWD" Type="varchar2" MaxLength="10" />
+    <Property Name="LI_XB" Type="number" Precision="1" Scale="0" />
+    <Property Name="LDT_CSRQ" Type="date" />
+    <Property Name="LDT_GZRQ" Type="date" />
+    <Property Name="LS_XL" Type="varchar2" MaxLength="10" />
+    <Property Name="LS_ZC" Type="varchar2" MaxLength="12" />
+    <Property Name="LS_BZ" Type="varchar2" MaxLength="20" />
+    <Property Name="LS_ZW" Type="varchar2" MaxLength="20" />
+    <Property Name="LS_SFZ" Type="varchar2" MaxLength="20" />
+    <Property Name="LS_SJH" Type="varchar2" MaxLength="15" />
+    <Property Name="LS_DHH" Type="varchar2" MaxLength="15" />
+    <Property Name="LI_ZT" Type="number" Precision="1" Scale="0" />
+    <Property Name="LI_JB" Type="number" Precision="2" Scale="0" />
+    <Property Name="LI_SIGN" Type="number" Precision="2" Scale="0" />
+    <Property Name="LS_ZSMC1" Type="varchar2" MaxLength="15" />
+    <Property Name="LS_ZSBH1" Type="varchar2" MaxLength="15" />
+    <Property Name="LS_ZSMC2" Type="varchar2" MaxLength="15" />
+    <Property Name="LS_ZSBH2" Type="varchar2" MaxLength="15" />
+    <Property Name="LS_QX" Type="varchar2" MaxLength="400" />
+    <Property Name="LS_MEMO" Type="varchar2" MaxLength="100" />
+    <Property Name="LB_ZP" Type="blob" />
+  </EntityType>
+  <EntityType Name="WJ_TYPE">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="number" Precision="10" Scale="0" Nullable="false" />
+    <Property Name="LL_SORT" Type="number" Precision="10" Scale="0" />
+    <Property Name="LS_ID" Type="varchar2" MaxLength="30" />
+    <Property Name="LL_SIGN" Type="number" Precision="2" Scale="0" />
+    <Property Name="LL_ELSE" Type="number" Precision="2" Scale="0" />
+    <Property Name="LS_ELSE" Type="varchar2" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="YZ_SEAL">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="number" Precision="10" Scale="0" Nullable="false" />
+    <Property Name="LS_ID" Type="varchar2" MaxLength="20" />
+    <Property Name="LL_SIGN" Type="number" Precision="2" Scale="0" />
+    <Property Name="LL_YZGS" Type="number" Precision="2" Scale="0" />
+    <Property Name="LS_BMMC" Type="varchar2" MaxLength="30" />
+    <Property Name="LS_BMBH" Type="varchar2" MaxLength="30" />
+    <Property Name="LL_YZLX" Type="number" Precision="2" Scale="0" />
+    <Property Name="LS_YZMC" Type="varchar2" MaxLength="60" />
+    <Property Name="LL_YZBH" Type="number" Precision="10" Scale="0" />
+    <Property Name="LS_ZXRXM1" Type="varchar2" MaxLength="20" />
+    <Property Name="LS_ZXRBH1" Type="varchar2" MaxLength="20" />
+    <Property Name="LS_ZXRXM2" Type="varchar2" MaxLength="20" />
+    <Property Name="LS_ZXRBH2" Type="varchar2" MaxLength="20" />
+    <Property Name="LL_ELSE" Type="number" Precision="2" Scale="0" />
+    <Property Name="LS_ELSE" Type="varchar2" MaxLength="20" />
+    <Property Name="LS_YZGS" Type="varchar2" MaxLength="50" />
+    <Property Name="LS_YZLX" Type="varchar2" MaxLength="40" />
+    <Property Name="LS_SORT" Type="number" Precision="10" Scale="0" />
+    <Property Name="LDT_KZRQ" Type="date" />
+    <Property Name="LS_YZJC" Type="varchar2" MaxLength="40" />
+    <Property Name="LS_ZXRXM3" Type="varchar2" MaxLength="20" />
+    <Property Name="LS_ZXRBH3" Type="varchar2" MaxLength="20" />
+    <Property Name="LL_AID" Type="number" Precision="10" Scale="0" />
+    <Property Name="LL_BID" Type="number" Precision="10" Scale="0" />
+  </EntityType>
+  <EntityContainer Name="ModelStoreContainer">
+    <EntitySet Name="HT_FILES" EntityType="Self.HT_FILES" Schema="JL_MIS" store:Type="Tables" />
+    <EntitySet Name="RS_USERS" EntityType="Self.RS_USERS" Schema="JL_MIS" store:Type="Tables" />
+    <EntitySet Name="WJ_TYPE" EntityType="Self.WJ_TYPE" Schema="JL_MIS" store:Type="Tables" />
+    <EntitySet Name="YZ_SEAL" EntityType="Self.YZ_SEAL" Schema="JL_MIS" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

@@ -1,0 +1,21 @@
+﻿<div class="row" style="margin:0">
+<div class="col-xs-3 col-sm-1 col-md-1"><img width='40' height ='35' src="../../Content/easyui/themes/icons/large_clipart.png" /></div>
+<div class="col-xs-3 col-sm-1 col-md-1"><img width='40' height ='35' src="/Ashxs/Valids.ashx?action=getsnimg"/></div>
+<div class="col-xs-6 col-sm-10 col-md-10">
+    @{TempData["userzp"]=ViewBag.userzp;}
+    <img width='40' height ='35' src="@Url.Action("Getimgfbyt1",new{memetype="image/gif"})"/>
+    姓名：@ViewBag.username 工号：@ViewBag.username 
+    <span style="float:right;padding-right:20px;"><a href="#" id="logout">退出登录</a></span>
+</div>
+
+</div>
+<script>
+    $("#logout").click(function () {
+        $.messager.confirm('系统提示', '您确定要退出本次登录吗?', function (r) {
+            if (r) {
+                location.href = "/Ashxs/Valids.ashx?action=logout";
+            }
+        });
+
+    });
+</script>

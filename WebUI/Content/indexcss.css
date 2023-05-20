@@ -1,0 +1,51 @@
+﻿.easyui-sidemenu {
+    width: auto;
+    height:auto;
+}
+
+.easyui-sidemenu .accordion {
+    background: #31ee47;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    width: auto;
+    height:auto;
+}
+
+.easyui-sidemenu .tree {
+    background: #74b3e7;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    width: auto;
+    height:auto;
+}
+
+.easyui-sidemenu .accordion .panel {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    width: auto;
+    height:auto;
+}
+
+.easyui-sidemenu .accordion .accordion-header {
+    background: #e6a0d1;
+    color: #b8c7ce;
+    margin-bottom: 1px;
+    width: auto;
+    height:auto;
+}
+.menu-text,
+.menu-text span {
+    font-size: 8px;
+}
+
+.easyui-accordion {
+    background: #eef10e;
+    width: auto;
+    height:auto;
+}
+.easyui-accordion .panel {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    width: auto;
+    height:auto;
+}

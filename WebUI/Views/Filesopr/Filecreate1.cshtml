@@ -1,0 +1,465 @@
+﻿    <link href="../../Content/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="../Content/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="../Content/easyui/themes/icon.css" rel="stylesheet" />
+    <script src="../Content/easyui/jquery.min.js"></script>
+    <script src="../Content/easyui/jquery.easyui.min.js"></script>
+    <script src="../Content/easyui/locale/easyui-lang-zh_CN.js"></script>
+    
+    <script src="../../Scripts/printThis.js"></script>
+
+@{
+    Layout = null;
+}
+
+<table class="easyui-datagrid" id="dg" style="width:100%;"></table>
+
+
+<script>
+    $('#dg').datagrid({
+        //title: '发文管理',
+        idField: 'ID',
+        url: '/Ashxs/Valids.ashx?action=getwjlistjson',
+        pagination: true,//表示在datagrid设置分页      
+        rownumbers: true,
+        singleSelect: true,
+        striped: true,//奇偶行使用不同背景色
+        nowrap: true,//数据显示在一行里
+        pageSize:10,
+        pageList: [5, 10, 15, 20],
+        //collapsible: true,
+        fitColumns: true,
+        remoteSort: false,
+        loadMsg: "正在努力加载数据，请稍后...",
+        queryParams: {},
+        onLoadSuccess: function (data) {
+            if (data.total == 0) {
+                var body = $(this).data().datagrid.dc.body2;
+                body.find('table tbody').append('暂无数据');
+                $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').hide();
+            }
+            else $(this).closest('p.datagrid-wrap').find('p.datagrid-pager').show();
+
+        },
+
+        columns: [[
+            { field: 'ID', title: 'ID',hidden:false },
+            { field: 'LS_NO', title: 'LS_NO', width: '100px', align: 'left', sortable: true },
+            { field: 'LL_SIGN', title: 'LL_SIGN', width: '100px', align: 'left', sortable: true },
+            { field: 'LS_FBBMMC', title: 'LS_FBBMMC', width: '100px', align: 'left', sortable: true },
+            { field: 'LS_FBRXM', title: 'LS_FBRXM', width: '100px', align: 'left', sortable: true},
+            {
+                field: 'LS_FBZT', title: 'LS_FBZT', width: '100px', align: 'left', sortable: true },
+            {
+                field: 'LDT_FBRRQ', title: 'LDT_FBRRQ', width: '100px',
+                formatter: function (value, row, index) {
+                    if (row.LDT_FBRRQ) {
+                        return new Date(value).Format("yyyy/MM/dd");
+                    } else {
+                        return value;
+                    }
+                }
+            }
+        ]],
+        toolbar:
+            [
+                {
+                text: '拟文。。',
+                iconCls: 'icon-add',
+                    handler: function () {
+                        $('#fw').form('clear');
+                        $('#filesrc1').attr('href', '#');
+                        $('#filesrc2').attr('href', '#');
+                        $('#filesrc1').text('');
+                        $('#filesrc2').text('');
+                        $.get('/Ashxs/Valids.ashx?action=getid', function (data) {
+                            $('#ID').textbox('setValue', data);
+                            $('#LS_NO').textbox('setValue', data);
+                        });
+                        $('#LL_SIGN').textbox('setValue', 0);
+                        $('#LS_FBRXM').textbox('setValue', sessionStorage.getItem('userxm'));
+                        $('#LS_FBBMMC').combobox('setValue', parseInt(sessionStorage.getItem('userbm')));
+                        $('#LDT_FBRRQ').datebox('setValue', new Date().Format('yyyymmdd'));
+
+                        $('#ww').window('open');
+                    }
+                },
+                {
+                    text: '编辑。。',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        var hasSelect = $("#dg").datagrid("getSelected");
+                        if (hasSelect!=null) { 
+                            formload(hasSelect['ID']);
+                        }
+                    }
+                },
+                {
+                    text: '删除。。',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        var hasSelect = $("#dg").datagrid("getSelected");
+                        if (hasSelect!= null) { 
+                            $.messager.confirm('Confirm', 'Are you sure?', function (r) {
+                                if (r) {
+                                    rowNumber = $("#dg").datagrid("getRowIndex", hasSelect);
+                                    $('#dg').datagrid('deleteRow', rowNumber);
+                                    $.ajax({
+                                        url: '/Ashxs/Valids.ashx?action=delwjrow&id=' + hasSelect.ID.toString(),
+                                        type: 'POST',
+                                        complete: function (xhr) {
+                                            if (xhr.responseText == '1') {
+                                                $.messager.alert('Warning', '已删除');
+                                            } else { $.messager.alert('Warning', '删除不成功'); }
+                                        }
+                                    }
+                                    );
+                                }
+                                $("#dg").datagrid("reload");
+                            });
+                        }
+                    }
+                },
+                {
+                    text: '打印。。',
+                    iconCls: 'icon-pring',
+                    handler: function () {
+                        printme();
+                    }
+                }
+            ],
+        onDblClickRow: function (index, row) {
+            formload(row['ID']);
+        }
+    });
+    function formload(id) {
+        $.ajaxSettings.async = false;
+        $('#fw').form('load', '/Ashxs/Valids.ashx?action=getwjrowjson&id=' + id);
+        $('#filesrc1').attr('href', '/FileUpLoad/Wjfiles/' + id + '/' + $('#filename1').val());
+        $('#filesrc1').text($('#filename1').val());
+        $('#filesrc2').attr('href', '/FileUpLoad/Wjfiles/' + id + '/' + $('#filename2').val());
+        $('#filesrc2').text($('#filename2').val());
+        $('#ww').window('open');
+        $.ajaxSettings.async = true;
+    }
+    Date.prototype.Format = function (fmt) {   
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3),//季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+</script>
+
+    <!--修改窗口-->
+
+    <div id="ww" class="easyui-window" title="修改" collapsible="false" minimizable="false" data-options="modal:true,closed:true,iconCls:'icon-save'"
+        maximizable="false" style="width: 600px; height: 400px; padding: 5px;top:5px; background: #fafafa;">
+
+        <div class="easyui-layout" fit="true">
+            <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+                <form id="fw" method="post">
+                    <table id="tw" cellpadding="3"  style="width: 100%;height:auto">
+                        <tr>
+                            <td>ID</td><td><input class="easyui-textbox" type="text" name="ID" id="ID" style="width: 100%" data-options="readonly:true"/></td>
+                            <td>单号</td><td><input class="easyui-textbox" type="text" name="LS_NO"id="LS_NO" style="width: 100%"  data-options="readonly:true,"/></td>
+                        </tr>
+                        <tr>
+                            <td>LL_SIGN</td><td><input class="easyui-textbox" type="text" name="LL_SIGN" id="LL_SIGN" style="width: 100%" data-options="readonly:true,"/></td>
+                            <td>发布单位</td><td>
+                                <!--<input class="easyui-textbox" type="text" name="LS_FBBMMC" id="LS_FBBMMC" style="width: 100%" data-options="readonly:true,"/>-->
+                                <input class="easyui-combobox" name="LS_FBBMMC" id="LS_FBBMMC" style="width: 100%" data-options="valueField:'NODE',textField:'DISPLAYTEXT',url:'/Ashxs/Selecs.ashx?action=getbmlist'"/>
+                             </td>
+                        </tr>
+                        <tr>
+                           <td>发布人</td><td><input class="easyui-textbox" type="text" name="LS_FBRXM" id="LS_FBRXM" style="width: 100%" data-options="readonly:true,"/></td>
+                           <td>发布时间</td><td><input class="easyui-datebox" type="text" name="LDT_FBRRQ" id="LDT_FBRRQ" style="width: 100%" data-options="readonly:true,"/></td>
+                        </tr>
+                        <tr>
+                           <td>文件名称</td><td><input class="easyui-textbox" type="text" name="LS_FBZT" style="width: 100%" data-options="required:true"/></td>
+                           <td>文件类型</td><!--<td><input class="easyui-textbox" type="text" name="LS_WJLX" style="width: 100%" /></td>-->
+                            <td><input class="easyui-combobox" name="LS_WJLX" style="width: 100%" data-options="valueField:'ID',textField:'LS_FBZT',url:'/Ashxs/Valids.ashx?action=getlxlistjson'"/></td>
+
+
+                        </tr>
+                        <tr>
+                           <td>正文</td><td colspan="2">
+                               <a id="filesrc1" href="#" target="_blank">LS_WJMC</a>
+                               <input type="text" name="LS_WJMC" id="filename1" style="display:none"/>
+
+                           </td>
+                           <td><input class="easyui-filebox" name="file1" id="file1" data-options="prompt:'Choose a file...'" style="width:100%"></td>
+                        </tr>
+                        <tr>
+                           <td>附件</td><td colspan="2">
+                               <a id="filesrc2" href="#" target="_blank">LS_FJMC</a>
+                               <input type="text" name="LS_FJMC" id="filename2" style="display:none"/>
+                            </td>
+                            <td><input class="easyui-filebox" name="file2" id="file2" data-options="prompt:'Choose a file...'" style="width:100%"></td>
+                        </tr>
+
+                        <tr>
+                            <td>关键词</td><td colspan="3" ><input class="easyui-textbox" type="text" name="LS_GJC" style="width: 100%"/></td>
+                        </tr>
+                        <tr>
+                            <td>接收人/部门</td><td colspan="3" ><div id="resjsr"><input class="easyui-textbox" type="text" name="LS_JSBMXS" id="LS_JSBMXS" style="width:100%;height:50px" data-options="required:true,multiline:true"/></div>
+                                <div style="display:none"><input class="easyui-textbox" type="text" name="LS_JSBMLB" id="LS_JSBMLB" style="width:100%;height:50px;" data-options="multiline:true"/></div></td>
+                        </tr>
+                        <tr>
+                            <td>备注事项</td><td colspan="3" ><input class="easyui-textbox" type="text" name="LS_WJBZ" id="LS_WJBZ" style="width:100%;height:100px" data-options="multiline:true"/></td>
+                        </tr>
+
+                    </table>
+                 </form>
+            </div>
+            <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;">
+                <a id="btnsform" class="easyui-linkbutton" icon="icon-ok" href="javascript:void(0)">form保存</a>
+                <a id="btnsjson" class="easyui-linkbutton" icon="icon-edit" href="javascript:void(0)">json保存</a>
+                <a id="btnsfd" class="easyui-linkbutton" icon="icon-edit" href="javascript:void(0)">formdata保存</a>
+                <a id="btnsend" class="easyui-linkbutton" icon="icon-edit" href="javascript:void(0)" onclick="$('#wsend').window('open')">发送</a>
+            </div>
+        </div>
+        
+    </div>
+<!--发送窗口-->
+    <div id="wsend" class="easyui-window" title="Custom Window Tools" data-options="modal:true,closed:true,iconCls:'icon-save',minimizable:false" style="width:300px;height:200px;padding:10px;top:15px;">
+		<div style="text-align:center;margin:10px 0 10px 0;"><input class="easyui-combobox" id="spr" style="width: 180px;" data-options="valueField:'ID',textField:'LS_XM',url:'/Ashxs/Selecs.ashx?action=getxmlist',panelHeight:'100px'"/></div>
+        <div style="text-align:center;margin:10px 0 10px 0;"><a id="btnsend2" class="easyui-linkbutton" icon="icon-edit" href="javascript:void(0)">发送</a></div>
+	</div>
+
+
+    <!--修改窗口2-->
+    <div id="ww2" class="easyui-window" title="修改" collapsible="false" minimizable="false" data-options="modal:true,closed:true,iconCls:'icon-save'"
+        maximizable="false" style="width: 350px; height: 300px; padding: 5px; background: #fafafa;left:100px;">
+        <table><tr><td>
+        <table id="dtpartm" class="easyui-treegrid" style="width:150px;height:250px;overflow-x:hidden;"
+            data-options="
+                url:'/Ashxs/Staffmng.ashx?action=getpartmtree',
+                idField:'NODE',
+                treeField:'DISPLAYTEXT',
+                singleSelect:true,
+                columns: [[
+                    { field: 'DISPLAYTEXT', title: '部门', width: '130px', align: 'left', sortable: true}
+                ]],
+                onClickRow:function (rowdata) {
+                    $('#dgusers').datagrid('load', { querystr: rowdata.TAGDATA });
+                }
+            
+            ">
+        </table>
+
+        </td><td style="width:200px;">
+        <table id="dgusers" class="easyui-datagrid" style="width:150px;height:250px;"
+            data-options="
+            title: '人员名单',
+            idField: 'ID',
+            url: '/Ashxs/Staffmng.ashx?action=getstafflistjson',
+            fit: true,
+            rownumbers: true,
+            singleSelect: false,
+            fitColumns: true,
+            columns: [[
+                { field: 'ck',checkbox:true},
+                { field: 'LS_XM', title: '姓名', width: '130px', align: 'left', sortable: true}
+            ]],
+            onCheck: function (rowIndex,rowdata) {
+                var str1 = $('#LS_JSBMXS').textbox('getValue');
+                var str2 = $('#LS_JSBMLB').textbox('getValue');
+                $('#LS_JSBMXS').textbox('setValue', str1 + rowdata['LS_XM'] + ',');
+                $('#LS_JSBMLB').textbox('setValue', str2 + rowdata['LS_GH'] + ',');
+            },
+            onUncheck: function (rowIndex,rowdata) {
+                var str1 = $('#LS_JSBMXS').textbox('getValue');
+                var str2 = $('#LS_JSBMLB').textbox('getValue');
+                str1=str1.replace(rowdata['LS_XM'] + ',','');
+                str2=str2.replace(rowdata['LS_GH'] + ',','');
+                $('#LS_JSBMXS').textbox('setValue', str1);
+                $('#LS_JSBMLB').textbox('setValue', str2);
+            }
+            ">
+
+        </table>
+ 
+        </td></tr>
+     </table>
+     </div>
+
+
+
+
+<script>
+    $(function () {
+        if (!sessionStorage.getItem('userxm')) {
+            window.location.replace("/home/Index");
+        }
+    });
+
+    function printme() {
+        $('#fw input').each(function () {
+            $(this).attr('value', $(this).val());
+        })
+        $('#fw').printThis({
+            importCSS: true,
+            importStyle: true,
+            formValues: true,
+            copyTagClasses: true
+        });
+    }
+
+    $('#btnsform').click(function () {
+        $.messager.progress();	// display the progress bar
+        $('#fw').form('submit', {
+            url: '/Ashxs/Valids.ashx?action=saverowform',
+            onSubmit: function () {
+                var isValid = $(this).form('validate');
+                if (!isValid) {
+                    $.messager.progress('close');	// hide progress bar while the form is invalid
+                }
+                return isValid;	// return false will stop the form submission
+            },
+            success: function () {
+                $.messager.progress('close');	// hide progress bar while submit successfully
+            }
+        });
+    });
+
+    $('#btnsjson').click(function () {
+        $.messager.progress();	// display the progress bar
+        $('#fw').form('submit', {
+            url: '/Ashxs/Valids.ashx?action=saverowjson',
+            onSubmit: function (param) {
+                var isValid = $(this).form('validate');
+                param.param = JSON.stringify($('#fw').serializeObject());
+                if (!isValid) {
+                    $.messager.progress('close');	// hide progress bar while the form is invalid
+                }
+                return isValid;	// return false will stop the form submission
+            },
+            success: function () {
+                $.messager.progress('close');	// hide progress bar while submit successfully
+            }
+        });
+    });
+    $('#btnsfd').click(function () {
+        if (!$('#fw').form('validate')) {
+            return alert('验证不通过');
+        };
+        $.messager.progress();
+        var fd = new FormData($('#fw')[0]);
+        //fd.append('photo', $('#photo')[0].files[0]);
+        //var value = $('#file2').filebox('getValue');
+        //fd.append('file2', $('#file2').next().find('input[type=file]')[0].files[0]);
+
+        var objData1 = {};
+        fd.forEach((value, key) => objData1[key] = value);
+        alert(JSON.stringify(objData1));
+        $.ajax({
+            url: '/Ashxs/Valids.ashx?action=saverowformfile',
+            type: 'post',
+            processData: false,
+            contentType: false,
+            data: fd,
+            success: function (result) {
+                $.messager.progress('close');
+                alert(result);
+            }
+        }
+        );
+    });
+
+    $('#btnsend2').click(function () {
+        var sprxm = $('#spr').combobox('getValue');
+        if (sprxm.length > 0) {
+            $('#LS_WJBZ').textbox('setValue', sprxm);
+            $('#LL_SIGN').textbox('setValue', 1);
+        } else {
+            alert('请输入');
+            return;
+        }
+        
+        if (!$('#fw').form('validate')) {
+            return alert('验证不通过');
+            $('#wsend').window('close');
+        };
+        $.messager.progress();
+        var fd = new FormData($('#fw')[0]);
+        var objData1 = {};
+        fd.forEach((value, key) => objData1[key] = value);
+        alert(JSON.stringify(objData1));
+        $.ajax({
+            url: '/Ashxs/Valids.ashx?action=saverowformfile',
+            type: 'post',
+            processData: false,
+            contentType: false,
+            data: fd,
+            success: function (result) {
+                $.messager.progress('close');
+                alert(result);
+                $('#wsend').window('close');
+            }
+        }
+        );
+    });
+ 
+
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+    $('#resjsr').dblclick(function () {
+        $('#dgusers').datagrid('clearChecked');
+        $('#dgusers').datagrid('clearSelections');
+        $('#ww2').window('open');
+    });
+    $('#dl').datalist({
+        url: '/Ashxs/Valids.ashx?action=getlxlistjson2',
+        checkbox: true,
+        lines: true
+    });
+
+
+
+</script>
+<style>
+    .textbox {
+        border: 0px;
+    }
+   #tw {
+        overflow: hidden;
+        table-layout: fixed;
+
+    }
+
+    #tw td{
+        width:25%;
+          border: 1px solid #95B8E7;
+          background-color: #fafafa;
+          vertical-align: middle;
+          text-align:center;
+          position: relative;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+    }
+</style>
