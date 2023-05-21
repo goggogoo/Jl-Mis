@@ -19,4 +19,3 @@ E:\mytest\web\Jl-Mis\Domain\obj\Debug\Domain.csproj.CoreCompileInputs.cache
 E:\mytest\web\Jl-Mis\Domain\obj\Debug\Domain.csproj.CopyComplete
 E:\mytest\web\Jl-Mis\Domain\obj\Debug\Domain.dll
 E:\mytest\web\Jl-Mis\Domain\obj\Debug\Domain.pdb
-E:\mytest\web\Jl-Mis\Domain\obj\Debug\Domain.csprojAssemblyReference.cache
